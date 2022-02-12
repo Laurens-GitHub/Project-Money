@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}That ain't it, chief.{% endblock %}
+
+{% block content %}
+<h1>These are not the stonks you're looking for.</h1>
+<img src="https://thumbs.gfycat.com/KindlyFrigidIchthyostega-size_restricted.gif">
+
+<div id="results-as-json">
+  <h2>Results as JSON</h2>
+  <pre>{{ pformat(search_results) }}</pre>
+</div>
+{% endblock %}

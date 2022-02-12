@@ -1,0 +1,37 @@
+TSLA,Tesla Inc
+LIT,Global X Lithium And Battery Tech ETF
+TXN,Texas Instruments Inc
+ADI,Analog Devices Inc
+NVDA,Nvidia Corporation
+LAC,Lithium Americas Corp
+TTNDY,Techtronic Industries Company
+AMD,Advanced Micro Devices Inc
+AMZN,Amazon.com Inc
+FB,Meta Platforms Inc
+ALB,Albemarle Corp
+SONY,Sony Group Corporation
+GOOGL,Alphabet Inc
+ASML,ASML Holding
+HD,Home Depot Inc
+WM,Waste Management Inc
+DHI,Dr Horton Inc
+PHM,Pulte Group Inc
+JNJ,Johnson & Johnson
+GIS,General Mills Inc
+AVGO,Broadcom Inc
+NXPI,NXP Semiconductors
+PG,Procter And Gamble Co
+BRKB,Berkshire Hathaway Inc Class B
+MSFT,Microsoft Corp
+CWEN,Clearway Energy Inc
+TGAN,Transphorm Inc
+PEP,Pepsico Inc
+MRVL,Marvell Technology Inc
+NTDOY,Nintendo
+KLAC,KLA Corp
+TSM,Taiwan Semiconductor Manufacturing
+INTC,Intel Corp
+LRCX,Lam Research Corp
+AAPL,Apple Inc
+F,Ford Motor Co
+QCOM,Qualcomm Inc

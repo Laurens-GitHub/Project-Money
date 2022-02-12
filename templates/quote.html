@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock Quote{% endblock %}
+
+{% block content %}
+<div id="quote-results">
+  <h2>Results as JSON</h2>
+  <pre>{{ pformat(quote) }}</pre>
+</div>
+
+{% endblock %}
