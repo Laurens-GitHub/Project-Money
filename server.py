@@ -155,6 +155,8 @@ def get_stock_quote():
 def register_user():
     """Create a new user."""
 
+    first_name = request.form.get("first_name")
+    last_name = request.form.get("last_name")
     email = request.form.get("email")
     password = request.form.get("password")
 
@@ -162,7 +164,7 @@ def register_user():
     if user:
         flash("Cannot create an account with that email. Try again.")
     else:
-        user = crud.create_user(email, password)
+        user = crud.create_user(first_name, last_name, email, password)
         db.session.add(user)
         db.session.commit()
         flash("Account created! Please log in.")
