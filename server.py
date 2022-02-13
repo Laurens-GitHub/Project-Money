@@ -185,8 +185,8 @@ def register_user():
 def process_login():
     """Process user login."""
 
-    email = request.form.get("email")
-    password = request.form.get("password")
+    email = request.form.get("login-email")
+    password = request.form.get("login-pass")
 
     user = crud.get_user_by_email(email)
     if not user or user.password != password:
