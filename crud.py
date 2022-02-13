@@ -33,6 +33,11 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
+def get_user_stocks(user_id):
+    """Return a user's saved stocks."""
+
+    return User_stock.query.filter(User.user_id == user_id).all()
+
 
 def create_stock(symbol, company):
     """Create and return a new stock."""
