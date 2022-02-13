@@ -172,13 +172,13 @@ def register_user():
     return redirect("/")
 
 
-# @app.route("/users/<user_id>")
-# def show_user(user_id):
-#     """Show details on a particular user."""
+@app.route("/users/<user_id>")
+def show_user(user_id):
+    """Show details on a particular user."""
 
-#     user = crud.get_user_by_id(user_id)
+    user = crud.get_user_by_id(user_id)
 
-#     return render_template("user_details.html", user=user)
+    return render_template("user_stocks.html", user=user)
 
 
 @app.route("/login", methods=["POST"])
