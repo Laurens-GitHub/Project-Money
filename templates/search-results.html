@@ -3,6 +3,8 @@
 {% block title %}That ain't it, chief.{% endblock %}
 
 {% block content %}
+<!-- use Jinja to handle the case where search_results is empty  -->
+<!-- {{if !search_results: ask user to search again}} -->
 <h1>These are not the stonks you're looking for.</h1>
 <img src="https://thumbs.gfycat.com/KindlyFrigidIchthyostega-size_restricted.gif">
 

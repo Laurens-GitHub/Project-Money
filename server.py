@@ -23,12 +23,21 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 
 
 
+# From anlu to Everyone 12:16 PM
+# # Write a yfapi.py module that would make the following code work, and then
+# # use this module in server.py in the appropriate places
+# from yfapi import YFAPIClient
 
-# @app.route("/")
-# def homepage():
-#     """View homepage."""
+# yf_client = YFAPIClient(STOCKS_KEY)
 
-#     return render_template("homepage.html")
+# # for getting quotes
+# quotes = yf_client.quotes(".INX,.DJI,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB")
+
+# # for getting trends
+# trends = yf_client.trends()  # this can have a default region argument of "US"
+
+# # for getting autocomplete
+# quotes = yf_client.autocomplete("XXX")
 
 @app.route('/')
 def show_stock_data():
@@ -107,16 +116,10 @@ def get_stock_quote():
         results = requests.request("GET", quote_url, headers=headers, params=quote_query)
         results_json = results.json()
 
-        #handle the case where nothing is returned
-        if results_json['ResultSet']['Result'] == []:
-            flash("No results found, please search again!")
-            return render_template("search-results.html",
-                                pformat=pformat,
-                                search_results="Nothing was found! Search again.")
-        else:
-            return render_template("search-results.html",
-                                pformat=pformat,
-                                search_results=results_json)
+
+        return render_template("search-results.html",
+                            pformat=pformat,
+                            search_results=results_json)
 
 
     else:
