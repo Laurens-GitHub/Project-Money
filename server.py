@@ -218,8 +218,9 @@ def create_rating(stock_id):
 
     else:
 #        create a stock using the quote info
-        symbol = requests.get(['quoteResponse']['result'][0]['symbol'])
-        company = requests.get(['quoteResponse']['result'][0]['longName'])
+        #symbol = requests.get_json(['quoteResponse']['result'][0]['symbol'])
+        print(requests.get_json())
+        #company = requests.get_json(['quoteResponse']['result'][0]['longName'])
         stock = crud.create_stock(symbol, company)
         db.session.add(stock)
         db.session.commit()
