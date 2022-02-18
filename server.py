@@ -224,10 +224,12 @@ def create_rating(stock_id):
         db.session.add(stock)
         db.session.commit()
 
+# create the user stock
         user = crud.get_user_by_email(logged_in_email)
         date_saved = today.strftime("%m/%d/%y")
         fav_stock = crud.create_user_stock(user.user_id, stock.stock, date_saved)
-
+        db.session.add(fav_stock)
+        db.session.commit()
 
 
 
