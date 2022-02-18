@@ -9,6 +9,7 @@ import crud
 from jinja2 import StrictUndefined
 import http.client, urllib.parse
 from newsapi import NewsApiClient
+import datetime
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -16,6 +17,7 @@ app.jinja_env.undefined = StrictUndefined
 STOCKS_KEY = os.environ['YAHOO_KEY']
 NEWS_KEY = os.environ['NEWS_KEY']
 NEWS_KEY2 = os.environ['NEWS_KEY2']
+today = datetime.datetime.now()
 
 
 #remove in production
@@ -23,7 +25,7 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 
 
 
-# From anlu to Everyone 12:16 PM
+# From anlu
 # # Write a yfapi.py module that would make the following code work, and then
 # # use this module in server.py in the appropriate places
 # from yfapi import YFAPIClient
@@ -156,7 +158,7 @@ def get_stock_quote():
 
 @app.route("/users", methods=["POST"])
 def register_user():
-    """Create a new user."""
+    """Register a new user."""
 
     first_name = request.form.get("first_name")
     last_name = request.form.get("last_name")
@@ -175,13 +177,14 @@ def register_user():
     return redirect("/")
 
 
-@app.route("/users/<user_id>")
-def show_user(user_id):
-    """Show details on a particular user."""
+@app.route("/saved")
+def show_user():
+    """Show the a user's saved stocks."""
 
-    user = crud.get_user_by_id(user_id)
+    logged_in_user = session.get("user_id")
+    user_stocks = crud.get_user_stocks(logged_in_user)
 
-    return render_template("user_stocks.html", user=user)
+    return render_template("user-stocks.html", stocks=user_stocks)
 
 
 @app.route("/login", methods=["POST"])
@@ -197,29 +200,36 @@ def process_login():
     else:
         # Log in user by storing the user's email in session
         session["user_email"] = user.email
+        session["user_id"] = user.user_id
         flash(f"Welcome back, {user.email}!")
 
     return redirect("/")
 
 
-# @app.route("/movies/<movie_id>/ratings", methods=["POST"])
-# def create_rating(movie_id):
-#     """Create a new rating for the movie."""
+@app.route("/quote/<stock_id>/favorites", methods=["POST"])
+def create_rating(stock_id):
+    """Create a new saved stock for the user."""
 
-#     logged_in_email = session.get("user_email")
-#     rating_score = request.form.get("rating")
+    logged_in_email = session.get("user_email")
+    stock_id = stock_id
 
-#     if logged_in_email is None:
-#         flash("You must log in to rate a movie.")
-#     elif not rating_score:
-#         flash("Error: you didn't select a score for your rating.")
-#     else:
-#         user = crud.get_user_by_email(logged_in_email)
-#         movie = crud.get_movie_by_id(movie_id)
+    if logged_in_email is None:
+        flash("You must log in to save a stock.")
 
-#         rating = crud.create_rating(user, movie, int(rating_score))
-#         db.session.add(rating)
-#         db.session.commit()
+    else:
+#        create a stock using the quote info
+        symbol = requests.get(['quoteResponse']['result'][0]['symbol'])
+        company = requests.get(['quoteResponse']['result'][0]['longName'])
+        stock = crud.create_stock(symbol, company)
+        db.session.add(stock)
+        db.session.commit()
+
+        user = crud.get_user_by_email(logged_in_email)
+        date_saved = today.strftime("%m/%d/%y")
+        fav_stock = crud.create_user_stock(user.user_id, stock.stock, date_saved)
+
+
+
 
 #         flash(f"You rated this movie {rating_score} out of 5.")
 
