@@ -206,8 +206,8 @@ def process_login():
     return redirect("/")
 
 
-@app.route("/quote/<stock_id>/favorites", methods=["POST"])
-def create_rating(stock_id):
+@app.route("/favorites", methods=["POST"])
+def create_user_stock(stock_id):
     """Create a new saved stock for the user."""
 
     logged_in_email = session.get("user_email")
@@ -218,9 +218,9 @@ def create_rating(stock_id):
 
     else:
 #        create a stock using the quote info
-        #symbol = requests.get_json(['quoteResponse']['result'][0]['symbol'])
-        print(requests.get_json())
-        #company = requests.get_json(['quoteResponse']['result'][0]['longName'])
+        symbol = requests.get_json(['quoteResponse']['result'][0]['symbol'])
+        #print(requests.get_json())
+        company = requests.get_json(['quoteResponse']['result'][0]['longName'])
         stock = crud.create_stock(symbol, company)
         db.session.add(stock)
         db.session.commit()
@@ -232,6 +232,7 @@ def create_rating(stock_id):
         db.session.add(fav_stock)
         db.session.commit()
 
+    return render_template()
 
 
 #         flash(f"You rated this movie {rating_score} out of 5.")
