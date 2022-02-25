@@ -207,37 +207,41 @@ def process_login():
 
 
 @app.route("/favorites", methods=["POST"])
-def create_user_stock(stock_id):
+def create_user_stock():
     """Create a new saved stock for the user."""
 
-    logged_in_email = session.get("user_email")
-    stock_id = stock_id
+    # logged_in_email = session.get("user_email")
+    # stock_id = stock_id
+    # quote = request.json.get("response")
+    # if logged_in_email is None:
+    #     flash("You must log in to save a stock.")
 
-    if logged_in_email is None:
-        flash("You must log in to save a stock.")
+    # else:
+    my_json = request.form.get("json_data", None)
 
-    else:
 #        create a stock using the quote info
-        symbol = requests.get_json(['quoteResponse']['result'][0]['symbol'])
-        #print(requests.get_json())
-        company = requests.get_json(['quoteResponse']['result'][0]['longName'])
-        stock = crud.create_stock(symbol, company)
-        db.session.add(stock)
-        db.session.commit()
+#         symbol = request.json(['quoteResponse']['result'][0]['symbol'])
+#         #print(requests.get_json())
+#         company = request.get_json(['quoteResponse']['result'][0]['longName'])
+#         stock = crud.create_stock(symbol, company)
+#         db.session.add(stock)
+#         db.session.commit()
 
-# create the user stock
-        user = crud.get_user_by_email(logged_in_email)
-        date_saved = today.strftime("%m/%d/%y")
-        fav_stock = crud.create_user_stock(user.user_id, stock.stock, date_saved)
-        db.session.add(fav_stock)
-        db.session.commit()
+# # create the user stock
+#         user = crud.get_user_by_email(logged_in_email)
+#         date_saved = today.strftime("%m/%d/%y")
+#         fav_stock = crud.create_user_stock(user.user_id, stock.stock, date_saved)
+#         db.session.add(fav_stock)
+#         db.session.commit()
 
-    return render_template()
+    #return render_template()
 
 
 #         flash(f"You rated this movie {rating_score} out of 5.")
 
-#     return redirect(f"/movies/{movie_id}")
+    return render_template("json-fetch.html",
+        pformat=pformat,
+        json_data=my_json)
 
 
 if __name__ == "__main__":
