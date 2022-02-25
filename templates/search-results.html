@@ -3,14 +3,14 @@
 {% block title %}Stock Quote{% endblock %}
 
 {% block body %}
-<!-- use Jinja to handle the case where search_results is empty  -->
-{%if not search_results %}}
-<h1>These are not the stonks you're looking for.</h1>
-<img src="https://thumbs.gfycat.com/KindlyFrigidIchthyostega-size_restricted.gif">
+
+{%if search_results['ResultSet']['Result'] == [] %}
+<p>We couldn't find anything for "{{ user_query }}"</p>
+<p>Please search again. </p>
 
 {% else %}
 <div id="results-as-json">
-  <h2>Results as JSON</h2>
+  <h2>Here's what we found for "{{ user_query }}"</h2>
   <pre>{{ pformat(search_results) }}</pre>
 </div>
 {% endif %}

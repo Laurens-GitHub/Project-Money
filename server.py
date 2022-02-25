@@ -41,6 +41,10 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 # # for getting autocomplete
 # quotes = yf_client.autocomplete("XXX")
 
+#=======================================#
+##############   HOMEPAGE   #############
+#=======================================#
+
 @app.route('/')
 def show_stock_data():
     """Shows stock data"""
@@ -84,14 +88,16 @@ def show_stock_data():
                                           language='en'
                                                                                     )
 
-
-
-
     return render_template('homepage.html',
                            pformat=pformat,
                            quote_data=quotes_json,
                            trend_data=trends_json,
                            news_data=top_headlines)
+
+
+#=======================================#
+###############   QUOTES   ##############
+#=======================================#
 
 @app.route("/quote")
 def get_stock_quote():
@@ -103,10 +109,6 @@ def get_stock_quote():
 
     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
     quote_response = quote.json()
-    # AAPL_quote = json_data['quoteResponse']['result'][0]
-    # ticker = json_data['quoteResponse']['result'][0]['symbol']
-    # stocks = data[symbol]
-    # print(data.text)
 
     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
         quote_url = "https://yfapi.net/v6/finance/autocomplete"
@@ -116,45 +118,23 @@ def get_stock_quote():
         headers = {'X-API-KEY': STOCKS_KEY}
 
         results = requests.request("GET", quote_url, headers=headers, params=quote_query)
-        results_json = results.json()
-
+        search_results = results.json()
 
         return render_template("search-results.html",
-                            pformat=pformat,
-                            search_results=results_json)
-
+                            search_results=search_results, pformat=pformat,
+                            user_query=query)
 
     else:
+        symbol = quote_response['quoteResponse']['result'][0]['symbol']
+        company = quote_response['quoteResponse']['result'][0]['name']
+
         return render_template("quote.html",
-                                pformat=pformat,
-                                quote=quote_response)
+                                symbol=symbol, )
 
 
-# @app.route("/search")
-# def show_search_results():
-#     """Show stock search results"""
-
-
-
-
-
-# @app.route("/movies/<movie_id>")
-# def show_movie(movie_id):
-#     """Show details on a particular movie."""
-
-#     movie = crud.get_movie_by_id(movie_id)
-
-#     return render_template("movie_details.html", movie=movie)
-
-
-# @app.route("/users")
-# def all_users():
-#     """View all users."""
-
-#     users = crud.get_users()
-
-#     return render_template("all_users.html", users=users)
-
+#=======================================#
+###############   USERS   ###############
+#=======================================#
 
 @app.route("/users", methods=["POST"])
 def register_user():

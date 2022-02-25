@@ -5,18 +5,15 @@
 {% block body %}
 <!-- write a form that has an action to the favorites route, and pass it the necessary info -->
 <!-- access the quote object and pass the symbol and company to the favorites route -->
-{ response = requests.post(json=quote) }
 <div>
     <form action="/favorites" method="POST">
-        favorite <input type="text" name="favorite">
-        {%set json_data = flask.request.quote%}
-        <input type="submit">
+        favorite <input type="submit" name="favorite">
     </form>
 </div>
 
 <div>
-    <h2>Results as JSON</h2>
-    <pre>{{ pformat(quote) }}</pre>
+    <h2>Here's your {{ quote }} quote:</h2>
+    <p>{{ quote }}</p>
 </div>
 <script src="/static/js/quote.js"></script>
 {% endblock %}

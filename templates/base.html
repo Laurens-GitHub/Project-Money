@@ -10,12 +10,20 @@
     {% block head %}{% endblock %}
   </head>
   <body>
+    <div>
+        <form action="/quote" method="GET">
+            Search <input type="text" name="search">
+            <input type="submit">
+        </form>
+      </div>
     {% for msg in get_flashed_messages() %}
     <p class="flash-msg">
       {{ msg }}
     </p>
   {% endfor %}
-    {% block body %}{% endblock %}
+    {% block body %}
+
+      {% endblock %}
 
     {% block after_body %}{% endblock %}
   </body>
