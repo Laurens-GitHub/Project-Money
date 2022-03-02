@@ -126,10 +126,14 @@ def get_stock_quote():
 
     else:
         symbol = quote_response['quoteResponse']['result'][0]['symbol']
-        company = quote_response['quoteResponse']['result'][0]['name']
+        company = quote_response['quoteResponse']['result'][0]['shortName']
 
         return render_template("quote.html",
-                                symbol=symbol, )
+                                symbol=symbol,
+                                company=company
+                                # pformat=pformat,
+                                # results=quote_response
+                                )
 
 
 #=======================================#
@@ -190,38 +194,37 @@ def process_login():
 def create_user_stock():
     """Create a new saved stock for the user."""
 
-    # logged_in_email = session.get("user_email")
-    # stock_id = stock_id
-    # quote = request.json.get("response")
-    # if logged_in_email is None:
-    #     flash("You must log in to save a stock.")
+    logged_in_email = session.get("user_email")
+    symbol = request.form.get("symbol")
+    company = request.form.get("company")
+    new_stock = crud.create_stock(symbol, company)
+    user = crud.get_user_by_email(logged_in_email)
+    date_saved = today.strftime("%m/%d/%y")
+    fav_stock = crud.create_user_stock(user, new_stock, date_saved)
+    check_stock = crud.get_stock_by_symbol(symbol)
 
-    # else:
-    my_json = request.form.get("json_data", None)
+# TODO: fix these conditions
+#check if this stock is already in our database:
+    if check_stock.symbol != symbol:
+#if it isn't, create the stock using the quote info:
+        db.session.add(new_stock)
+        db.session.commit()
+#and create the user stock:
+        db.session.add(fav_stock)
+        db.session.commit()
+        flash(f"You saved {company} to your favorites.")
+#if it is, just create the user stock:
+    elif check_stock:
+        db.session.add(fav_stock)
+        db.session.commit()
+        flash(f"You saved {company} to your favorites.")
 
-#        create a stock using the quote info
-#         symbol = request.json(['quoteResponse']['result'][0]['symbol'])
-#         #print(requests.get_json())
-#         company = request.get_json(['quoteResponse']['result'][0]['longName'])
-#         stock = crud.create_stock(symbol, company)
-#         db.session.add(stock)
-#         db.session.commit()
+    else:
+        if logged_in_email is None:
+            flash("You must log in to save a stock.")
 
-# # create the user stock
-#         user = crud.get_user_by_email(logged_in_email)
-#         date_saved = today.strftime("%m/%d/%y")
-#         fav_stock = crud.create_user_stock(user.user_id, stock.stock, date_saved)
-#         db.session.add(fav_stock)
-#         db.session.commit()
+    return redirect("/")
 
-    #return render_template()
-
-
-#         flash(f"You rated this movie {rating_score} out of 5.")
-
-    return render_template("json-fetch.html",
-        pformat=pformat,
-        json_data=my_json)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,9 @@
 
 from model import db, User, Stock, User_stock, connect_to_db
 
+#=======================================#
+###############   USERS   ###############
+#=======================================#
 
 def create_user(first_name, last_name, email, password):
     """Create and return a new user."""
@@ -14,7 +17,6 @@ def create_user(first_name, last_name, email, password):
     )
 
     return user
-
 
 def get_users():
     """Return all users."""
@@ -33,11 +35,10 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
-def get_user_stocks(user_id):
-    """Return a user's saved stocks."""
 
-    return User_stock.query.filter(User.user_id == user_id).all()
-
+#=======================================#
+###############   STOCKS   ##############
+#=======================================#
 
 def create_stock(symbol, company):
     """Create and return a new stock."""
@@ -48,6 +49,25 @@ def create_stock(symbol, company):
     )
 
     return stock
+
+def get_stocks():
+    """Return all stocks."""
+
+    return Stock.query.all()
+
+def get_stock_by_id(stock_id):
+    """Return a stock by its id."""
+
+    return Stock.query.get(stock_id)
+
+def get_stock_by_symbol(symbol):
+    """Return a stock by its symbol."""
+
+    return Stock.query.filter(Stock.symbol == symbol).first()
+
+#=======================================#
+############   USER STOCKS   ############
+#=======================================#
 
 def create_user_stock(user, stock, date_saved):
     """Create and return a new user stock."""
@@ -60,10 +80,10 @@ def create_user_stock(user, stock, date_saved):
 
     return user_stock
 
-def get_stocks():
-    """Return all stocks."""
+def get_user_stocks(user_id):
+    """Return a user's saved stocks."""
 
-    return Stock.query.all()
+    return User_stock.query.filter(User_stock.user_id == user_id).all()
 
 
 # def get_movie_by_id(movie_id):

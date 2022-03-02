@@ -20,8 +20,10 @@ class User(db.Model):
 
 
     def __repr__(self):
-        return f"""<User id={self.user_id} first name={self.first_name}
-        last name={self.last_name} email={self.email}>"""
+        return f"""<User id={self.user_id},
+    first name={self.first_name},
+    last name={self.last_name},
+    email={self.email}>"""
 
 
 class Stock(db.Model):
@@ -36,7 +38,7 @@ class Stock(db.Model):
 
 
     def __repr__(self):
-        return f"<Stock id={self.stock_id} symbol={self.symbol}>"
+        return f"<Stock id={self.stock_id}, symbol={self.symbol}, company={self.company}>"
 
 
 class User_stock(db.Model):
@@ -47,13 +49,16 @@ class User_stock(db.Model):
     user_stock_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     stock_id = db.Column(db.Integer, db.ForeignKey("stocks.stock_id"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
-    date_saved = db.Column(db.DateTime)
+    date_saved = db.Column(db.String)
 
     stock = db.relationship("Stock", backref="user_stocks")
     user = db.relationship("User", backref="user_stocks")
 
     def __repr__(self):
-        return f"<User stock id={self.user_stock_id} user={self.user_id}>"
+        return f"""<User stock id={self.user_stock_id},
+    stock id={self.stock_id},
+    user={self.user_id},
+    date saved={self.date_saved}>"""
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///market", echo=True):
