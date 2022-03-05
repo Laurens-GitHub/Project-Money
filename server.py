@@ -9,7 +9,6 @@ import crud
 from jinja2 import StrictUndefined
 import http.client, urllib.parse
 from newsapi import NewsApiClient
-import datetime
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -17,7 +16,6 @@ app.jinja_env.undefined = StrictUndefined
 STOCKS_KEY = os.environ['YAHOO_KEY']
 NEWS_KEY = os.environ['NEWS_KEY']
 NEWS_KEY2 = os.environ['NEWS_KEY2']
-today = datetime.datetime.now()
 
 
 #remove in production
@@ -54,10 +52,12 @@ def show_stock_data():
 
     quote_url = "https://yfapi.net/v6/finance/quote"
     trending_url = "https://yfapi.net/v1/finance/trending/US"
-
+    summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
 
     trend_query = {"region":"US"}
     quote_query = {"symbols":".INX,.DJI,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB"}
+    summary_query = {"lang":"en". "region":"US"}
+
 
     headers = {'X-API-KEY': STOCKS_KEY}
 
@@ -127,12 +127,14 @@ def get_stock_quote():
     else:
         symbol = quote_response['quoteResponse']['result'][0]['symbol']
         company = quote_response['quoteResponse']['result'][0]['shortName']
-
+        quote_type = quote_response['quoteResponse']['result'][0]['quoteType']
+        # known values for quote_type: "EQUITY", "ETF", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
         return render_template("quote.html",
                                 symbol=symbol,
-                                company=company
-                                # pformat=pformat,
-                                # results=quote_response
+                                company=company,
+                                quote_type=quote_type,
+                                pformat=pformat,
+                                results=quote_response
                                 )
 
 
@@ -185,7 +187,17 @@ def process_login():
         # Log in user by storing the user's email in session
         session["user_email"] = user.email
         session["user_id"] = user.user_id
-        flash(f"Welcome back, {user.email}!")
+        flash(f"Welcome back, {user.first_name}!")
+
+    return redirect("/")
+
+@app.route("/logoff", methods=["POST"])
+def process_logout():
+    """Process user logout."""
+
+    session["user_email"] = []
+    session["user_id"] = []
+    flash(f"You've been logged out")
 
     return redirect("/")
 
@@ -195,33 +207,43 @@ def create_user_stock():
     """Create a new saved stock for the user."""
 
     logged_in_email = session.get("user_email")
-    symbol = request.form.get("symbol")
     company = request.form.get("company")
-    new_stock = crud.create_stock(symbol, company)
+    new_symbol = request.form.get("symbol")
     user = crud.get_user_by_email(logged_in_email)
-    date_saved = today.strftime("%m/%d/%y")
-    fav_stock = crud.create_user_stock(user, new_stock, date_saved)
-    check_stock = crud.get_stock_by_symbol(symbol)
+    check_stock = crud.get_stock_by_symbol(new_symbol)
 
-# TODO: fix these conditions
-#check if this stock is already in our database:
-    if check_stock.symbol != symbol:
-#if it isn't, create the stock using the quote info:
+    if logged_in_email is None:
+        flash("You must log in to save a stock.")
+
+#if this stock doesn't already exist in our database,
+#add it using the quote info:
+    elif check_stock is None:
+        symbol = new_symbol
+        new_stock = crud.create_stock(symbol, company)
         db.session.add(new_stock)
         db.session.commit()
-#and create the user stock:
-        db.session.add(fav_stock)
-        db.session.commit()
-        flash(f"You saved {company} to your favorites.")
-#if it is, just create the user stock:
-    elif check_stock:
+#and add the user stock:
+        created_stock = crud.get_stock_by_symbol(symbol)
+        stock_id = created_stock.stock_id
+        user_id = user.user_id
+        fav_stock = crud.create_user_stock(user_id, stock_id)
         db.session.add(fav_stock)
         db.session.commit()
         flash(f"You saved {company} to your favorites.")
 
-    else:
-        if logged_in_email is None:
-            flash("You must log in to save a stock.")
+#check if this stock is already in our database:
+
+    elif check_stock.symbol == new_symbol:
+
+#if it is, just create the user stock:
+        stock_id = check_stock.stock_id
+        user_id = user.user_id
+        fav_stock = crud.create_user_stock(user_id, stock_id)
+        db.session.add(fav_stock)
+        db.session.commit()
+        flash(f"You saved {company} to your favorites.")
+
+
 
     return redirect("/")
 

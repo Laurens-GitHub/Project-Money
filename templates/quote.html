@@ -17,8 +17,8 @@
     <h2>Here's your {{ symbol }} quote:</h2>
     <p>{{ symbol }}</p>
     <p>{{ company }}</p>
+    <pre>{{ pformat(results) }}</pre>
 
 </div>
 <script src="/static/js/quote.js"></script>
 {% endblock %}
-<pre>pformat(results)</pre>

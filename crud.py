@@ -1,6 +1,12 @@
 """CRUD operations."""
 
 from model import db, User, Stock, User_stock, connect_to_db
+import datetime
+import pytz
+from pytz import timezone
+
+#TODO: configure date into MM/DD/YY format
+today = datetime.datetime.now(pytz.timezone('America/New_York'))
 
 #=======================================#
 ###############   USERS   ###############
@@ -63,18 +69,21 @@ def get_stock_by_id(stock_id):
 def get_stock_by_symbol(symbol):
     """Return a stock by its symbol."""
 
-    return Stock.query.filter(Stock.symbol == symbol).first()
+    stock_by_symbol = Stock.query.filter(Stock.symbol == symbol).first()
+    if stock_by_symbol:
+        return stock_by_symbol
+    else:
+        return None
 
 #=======================================#
 ############   USER STOCKS   ############
 #=======================================#
 
-def create_user_stock(user, stock, date_saved):
+def create_user_stock(user_id, stock_id, date_saved=today):
     """Create and return a new user stock."""
-
     user_stock = User_stock(
-            user=user,
-            stock=stock,
+            user_id=user_id,
+            stock_id=stock_id,
             date_saved=date_saved
     )
 
@@ -83,8 +92,16 @@ def create_user_stock(user, stock, date_saved):
 def get_user_stocks(user_id):
     """Return a user's saved stocks."""
 
-    return User_stock.query.filter(User_stock.user_id == user_id).all()
+    saved_stocks= User_stock.query.filter(User_stock.user_id == user_id).all()
 
+    return saved_stocks
+
+def delete_user_stock(user_id, stock_id):
+    """Delete a user's saved stocks."""
+
+    deleted_stock = User_stock.query.filter(user_id=user_id, stock_id=stock_id).first()
+
+    return deleted_stock
 
 # def get_movie_by_id(movie_id):
 #     """Return a movie by primary key."""

@@ -61,8 +61,8 @@ ALTER SEQUENCE public.stocks_stock_id_seq OWNED BY public.stocks.stock_id;
 
 CREATE TABLE public.user_stocks (
     user_stock_id integer NOT NULL,
-    stock_id integer,
-    user_id integer,
+    stock_id integer NOT NULL,
+    user_id integer NOT NULL,
     date_saved character varying
 );
 
@@ -191,6 +191,11 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 35	AAPL	Apple Inc
 36	F	Ford Motor Co
 37	QCOM	Qualcomm Inc
+38	QQQ	Invesco QQQ Trust, Series 1
+40	VEA	Vanguard FTSE Developed Markets
+41	GERM	German Engineering Co.
+42	VIT	25135
+44	GEM	Goldman Sachs ActiveBeta Emergi
 \.
 
 
@@ -199,56 +204,59 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 --
 
 COPY public.user_stocks (user_stock_id, stock_id, user_id, date_saved) FROM stdin;
-1	7	1	02/25/22
-2	32	1	02/25/22
-3	2	1	02/25/22
-4	8	1	02/25/22
-5	6	1	02/25/22
-6	9	1	02/25/22
-7	20	1	02/25/22
-8	13	1	02/25/22
-9	2	1	02/25/22
-10	36	1	02/25/22
-11	3	2	02/25/22
-12	37	2	02/25/22
-13	8	2	02/25/22
-14	2	2	02/25/22
-15	37	2	02/25/22
-16	14	2	02/25/22
-17	37	2	02/25/22
-18	34	2	02/25/22
-19	1	2	02/25/22
-20	3	2	02/25/22
-21	32	3	02/25/22
-22	26	3	02/25/22
-23	33	3	02/25/22
-24	2	3	02/25/22
-25	21	3	02/25/22
-26	2	3	02/25/22
-27	15	3	02/25/22
-28	15	3	02/25/22
-29	17	3	02/25/22
-30	12	3	02/25/22
-31	23	4	02/25/22
-32	27	4	02/25/22
-33	6	4	02/25/22
-34	7	4	02/25/22
-35	1	4	02/25/22
-36	30	4	02/25/22
-37	12	4	02/25/22
-38	2	4	02/25/22
-39	22	4	02/25/22
-40	31	4	02/25/22
-41	26	5	02/25/22
-42	19	5	02/25/22
-43	20	5	02/25/22
-44	20	5	02/25/22
-45	28	5	02/25/22
-46	18	5	02/25/22
-47	4	5	02/25/22
-48	26	5	02/25/22
-49	25	5	02/25/22
-50	17	5	02/25/22
+1	15	1	03/05/22
+2	35	1	03/05/22
+3	31	1	03/05/22
+4	30	1	03/05/22
+5	3	1	03/05/22
+6	20	1	03/05/22
+7	9	1	03/05/22
+8	14	1	03/05/22
+9	12	1	03/05/22
+10	13	1	03/05/22
+11	24	2	03/05/22
+12	21	2	03/05/22
+13	23	2	03/05/22
+14	3	2	03/05/22
+15	4	2	03/05/22
+16	14	2	03/05/22
+17	31	2	03/05/22
+18	18	2	03/05/22
+19	30	2	03/05/22
+20	10	2	03/05/22
+21	14	3	03/05/22
+22	3	3	03/05/22
+23	7	3	03/05/22
+24	6	3	03/05/22
+25	31	3	03/05/22
+26	33	3	03/05/22
+27	4	3	03/05/22
+28	13	3	03/05/22
+29	28	3	03/05/22
+30	12	3	03/05/22
+31	15	4	03/05/22
+32	37	4	03/05/22
+33	20	4	03/05/22
+34	22	4	03/05/22
+35	14	4	03/05/22
+36	8	4	03/05/22
+37	5	4	03/05/22
+38	6	4	03/05/22
+39	17	4	03/05/22
+40	24	4	03/05/22
+41	3	5	03/05/22
+42	18	5	03/05/22
+43	9	5	03/05/22
+44	27	5	03/05/22
+45	7	5	03/05/22
+46	8	5	03/05/22
+47	26	5	03/05/22
+48	10	5	03/05/22
+49	6	5	03/05/22
+50	15	5	03/05/22
+56	36	6	2022-03-05 13:42:54.71143+00
+57	1	6	2022-03-05 13:47:10.638535+00
+90	38	6	2022-03-05 13:51:30.547934+00
 \.
 
 
@@ -262,6 +270,8 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 3	John	Doe 2	user2@test.com	test
 4	John	Doe 3	user3@test.com	test
 5	John	Doe 4	user4@test.com	test
+6	Lauren	Edwards	Hey@LEdwards.co	hi
+7	Lauren	Hill	hello@gmail.com	hi
 \.
 
 
@@ -269,21 +279,21 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 -- Name: stocks_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.stocks_stock_id_seq', 37, true);
+SELECT pg_catalog.setval('public.stocks_stock_id_seq', 45, true);
 
 
 --
 -- Name: user_stocks_user_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 50, true);
+SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 90, true);
 
 
 --
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 5, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 7, true);
 
 
 --
@@ -300,6 +310,14 @@ ALTER TABLE ONLY public.stocks
 
 ALTER TABLE ONLY public.stocks
     ADD CONSTRAINT stocks_symbol_key UNIQUE (symbol);
+
+
+--
+-- Name: user_stocks unique_user_stock; Type: CONSTRAINT; Schema: public; Owner: hackbright
+--
+
+ALTER TABLE ONLY public.user_stocks
+    ADD CONSTRAINT unique_user_stock UNIQUE (user_id, stock_id);
 
 
 --

@@ -2,20 +2,24 @@
 
 import os
 import json
+from copy import deepcopy
 from random import choice
 import datetime
+import pytz
+from pytz import timezone
 
 import crud
 import model
+from model import Stock
 import server
 
-os.system("dropdb market")
+os.system('dropdb market')
 os.system('createdb market')
 
 model.connect_to_db(server.app)
 model.db.create_all()
 
-today = datetime.datetime.now()
+today = datetime.datetime.now(pytz.timezone('America/New_York'))
 
 
 # Load stock data from txt file
@@ -48,10 +52,19 @@ for n in range(5):
     model.db.session.add(user)
 
     # save 10 stocks for the user
+    unique_stocks = Stock.query.all()
+
     for _ in range (10):
-        random_stock = choice(stocks_in_db)
+        print(user)
+        random_stock = choice(unique_stocks)
         date_saved = today.strftime("%m/%d/%y")
-        user_stock = crud.create_user_stock(user, random_stock, date_saved)
+        print(random_stock)
+        print(unique_stocks)
+        print(model.db.session)
+
+        user_stock = crud.create_user_stock(user.user_id, random_stock.stock_id, date_saved)
         model.db.session.add(user_stock)
+        unique_stocks.remove(random_stock)
+
 
 model.db.session.commit()
