@@ -55,16 +55,18 @@ def show_stock_data():
     summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
 
     trend_query = {"region":"US"}
-    quote_query = {"symbols":".INX,.DJI,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB"}
-    summary_query = {"lang":"en". "region":"US"}
+    quote_query = {"symbols":".INX,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB"}
+    summary_query = {"lang":"en", "region":"US"}
 
 
     headers = {'X-API-KEY': STOCKS_KEY}
 
     trends = requests.request("GET", trending_url, headers=headers, params=trend_query)
     quotes = requests.request("GET", quote_url, headers=headers, params=quote_query)
+    summary = requests.request("GET", summary_url, headers=headers, params=summary_query)
     trends_json = trends.json()
     quotes_json = quotes.json()
+    summary_json = summary.json()
 
     # conn = http.client.HTTPSConnection('api.marketaux.com')
 
@@ -92,7 +94,8 @@ def show_stock_data():
                            pformat=pformat,
                            quote_data=quotes_json,
                            trend_data=trends_json,
-                           news_data=top_headlines)
+                           summary_data=summary_json,
+                        news_data=top_headlines)
 
 
 #=======================================#
@@ -103,12 +106,18 @@ def show_stock_data():
 def get_stock_quote():
     """Show a stock quote data."""
     quote_url = "https://yfapi.net/v6/finance/quote/"
+    price_url = "https://yfapi.net/v8/finance/spark" #gets price history
     symbol = request.args.get("search")
-    quote_query = {"symbols": symbol }
+    quote_query = {"symbols": symbol}
+    price_query = {"symbols": symbol, "range": "1d", "interval": "15m"}
     headers = {'X-API-KEY': STOCKS_KEY}
 
     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
+    price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
+
     quote_response = quote.json()
+    price_response = price_hist.json()
+
 
     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
         quote_url = "https://yfapi.net/v6/finance/autocomplete"
@@ -124,18 +133,68 @@ def get_stock_quote():
                             search_results=search_results, pformat=pformat,
                             user_query=query)
 
+# known values for quote_type: "EQUITY", "ETF", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
+
+#test template
+
     else:
-        symbol = quote_response['quoteResponse']['result'][0]['symbol']
-        company = quote_response['quoteResponse']['result'][0]['shortName']
-        quote_type = quote_response['quoteResponse']['result'][0]['quoteType']
-        # known values for quote_type: "EQUITY", "ETF", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
-        return render_template("quote.html",
-                                symbol=symbol,
-                                company=company,
-                                quote_type=quote_type,
-                                pformat=pformat,
-                                results=quote_response
-                                )
+        return render_template("test.html", pformat=pformat, quote_json=quote_response)
+
+    # else:
+
+    # quote_type = quote_response['quoteResponse']['result'][0]['quoteType']
+
+    # elif quote_type == "EQUITY":
+    #     #quote_type = quote_response['quoteResponse']['result'][0]['quoteType']
+    #     symbol = quote_response['quoteResponse']['result'][0]['symbol']
+    #     company = quote_response['quoteResponse']['result'][0]['shortName']
+    #     dollar_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChange'], ".2f")
+    #     pct_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChangePercent'], ".2f")
+    #     prev_close = format(quote_response['quoteResponse']['result'][0]['regularMarketPreviousClose'], ".2f")
+    #     open_price = format(quote_response['quoteResponse']['result'][0]['regularMarketOpen'], ".2f")
+    #     ask_price = format(quote_response['quoteResponse']['result'][0]['ask'], ".2f")
+    #     bid_price = format(quote_response['quoteResponse']['result'][0]['bid'], ".2f")
+    #     day_range = quote_response['quoteResponse']['result'][0]['regularMarketDayRange']
+    #     year_range = quote_response['quoteResponse']['result'][0]['fiftyTwoWeekRange']
+    #     volume = quote_response['quoteResponse']['result'][0]['regularMarketVolume']
+    #     pe_ratio = format(quote_response['quoteResponse']['result'][0]['trailingPE'], ".2f")
+    #     eps = format(quote_response['quoteResponse']['result'][0]['epsTrailingTwelveMonths'], ".2f")
+    #     market_cap = quote_response['quoteResponse']['result'][0]['marketCap']
+    #     return render_template("stock.html",
+    #                             symbol=symbol,
+    #                             company=company,
+    #                             dollar_chg=dollar_chg,
+    #                             pct_chg=pct_chg,
+    #                             prev_close=prev_close,
+    #                             open_price=open_price,
+    #                             ask_price=ask_price,
+    #                             bid_price=bid_price,
+    #                             day_range=day_range,
+    #                             year_range=year_range,
+    #                             volume=volume,
+    #                             pe_ratio=pe_ratio,
+    #                             eps=eps,
+    #                             market_cap=market_cap,
+    #                             pformat=pformat,
+    #                             stock_json=quote_response,
+    #                             price_json=price_response
+    #                             )
+
+    # elif quote_type == "ETF":
+    #     return render_template("ETF.html", pformat=pformat, ETF_json=quote_response, price_json=price_response)
+
+    # elif quote_type == "INDEX":
+    #     return render_template("index.html", pformat=pformat, index_json=quote_response, price_json=price_response)
+
+    # elif quote_type == "MUTUALFUND":
+    #     return render_template("fund.html", pformat=pformat, fund_json=quote_response, price_json=price_response)
+
+    # elif quote_type == "CURRENCY":
+    #     return render_template("currency.html", pformat=pformat, currency_json=quote_response, price_json=price_response)
+
+    # elif quote_type == "CRYPTOCURRENCY":
+    #     return render_template("crypto.html", pformat=pformat, crypto_json=quote_response, price_json=price_response)
+
 
 
 #=======================================#

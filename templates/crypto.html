@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock Quote{% endblock %}
+
+{% block body %}
+<!-- write a form that has an action to the favorites route, and pass it the necessary info -->
+<!-- access the quote object and pass the symbol and company to the favorites route -->
+<div>
+
+</div>
+
+<div>
+    <pre>{{ pformat(crypto_json) }}</pre>
+    <pre>{{ pformat(price_json) }}</pre>
+
+</div>
+<script src="/static/js/stock.js"></script>
+{% endblock %}
+<!--
+    <form action="/favorites" method="POST">
+        <input type="submit" name="favorite" value="favorite">
+        <input type="hidden" name="symbol" value="{{ symbol }}">
+        <input type="hidden" name="company" value="{{ company }}">
+    </form>
+
+<h2>Here's your {{ symbol }} quote:</h2>
+
+<p> {{ company }} ({{ symbol }})</p>
+<p>{{ dollar_chg }}</p>
+<p>{{ pct_chg }}</p>
+<p>{{ prev_close }}</p>
+<p>{{ open_price }}</p>
+<p>{{ ask_price }}</p>
+<p>{{ bid_price }}</p>
+<p>{{ day_range }}</p>
+<p>{{ year_range }}</p>
+<p>{{ volume }}</p>
+<p>{{ pe_ratio }}</p>
+<p>{{ eps }}</p>
+<p>{{ market_cap }}</p> -->
