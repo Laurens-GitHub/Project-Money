@@ -15,19 +15,23 @@
 
 <div>
     <h2>Here's your {{ symbol }} quote:</h2>
-    <p> {{ company }} ({{ symbol }})</p>
+
+    <p>{{ company }} ({{ symbol }})</p>
     <p>{{ dollar_chg }}</p>
-    <p>{{ pct_chg }}</p>
+    <p>{{ pct_chg }}%</p>
     <p>{{ prev_close }}</p>
     <p>{{ open_price }}</p>
     <p>{{ ask_price }}</p>
     <p>{{ bid_price }}</p>
-    <p>{{ day_range }}</p>
-    <p>{{ year_range }}</p>
+    <p>{{ day_high }}</p>
+    <p>{{ day_low }}</p>
+    <p>{{ year_high }}</p>
+    <p>{{ year_low }}</p>
     <p>{{ volume }}</p>
     <p>{{ pe_ratio }}</p>
     <p>{{ eps }}</p>
     <p>{{ market_cap }}</p>
+
     <pre>{{ pformat(stock_json) }}</pre>
     <pre>{{ pformat(price_json) }}</pre>
 
