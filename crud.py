@@ -1,6 +1,6 @@
 """CRUD operations."""
 
-from model import db, User, Stock, User_stock, connect_to_db
+from model import db, User, Stock, UserStock, connect_to_db
 import datetime
 import pytz
 from pytz import timezone
@@ -81,7 +81,7 @@ def get_stock_by_symbol(symbol):
 
 def create_user_stock(user_id, stock_id, date_saved=today):
     """Create and return a new user stock."""
-    user_stock = User_stock(
+    user_stock = UserStock(
             user_id=user_id,
             stock_id=stock_id,
             date_saved=date_saved
@@ -92,14 +92,14 @@ def create_user_stock(user_id, stock_id, date_saved=today):
 def get_user_stocks(user_id):
     """Return a user's saved stocks."""
 
-    saved_stocks= User_stock.query.filter(User_stock.user_id == user_id).all()
+    saved_stocks= UserStock.query.filter(UserStock.user_id == user_id).all()
 
     return saved_stocks
 
 def delete_user_stock(user_id, stock_id):
     """Delete a user's saved stocks."""
 
-    deleted_stock = User_stock.query.filter(user_id=user_id, stock_id=stock_id).first()
+    deleted_stock = UserStock.query.filter(user_id=user_id, stock_id=stock_id).first()
 
     return deleted_stock
 

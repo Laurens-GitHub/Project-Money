@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.4 (Ubuntu 13.4-4.pgdg20.04+1)
--- Dumped by pg_dump version 13.4 (Ubuntu 13.4-4.pgdg20.04+1)
+-- Dumped from database version 13.6 (Ubuntu 13.6-1.pgdg20.04+1)
+-- Dumped by pg_dump version 13.6 (Ubuntu 13.6-1.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -191,11 +191,11 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 35	AAPL	Apple Inc
 36	F	Ford Motor Co
 37	QCOM	Qualcomm Inc
-38	QQQ	Invesco QQQ Trust, Series 1
-40	VEA	Vanguard FTSE Developed Markets
-41	GERM	German Engineering Co.
-42	VIT	25135
-44	GEM	Goldman Sachs ActiveBeta Emergi
+38	SWPPX	Schwab S&P 500 Index Fund
+39	^DJI	Dow Jones Industrial Average
+40	BTC-USD	Bitcoin USD
+41	QQQ	Invesco QQQ Trust, Series 1
+42	EUR=X	USD/EUR
 \.
 
 
@@ -204,59 +204,62 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 --
 
 COPY public.user_stocks (user_stock_id, stock_id, user_id, date_saved) FROM stdin;
-1	15	1	03/05/22
-2	35	1	03/05/22
-3	31	1	03/05/22
-4	30	1	03/05/22
-5	3	1	03/05/22
-6	20	1	03/05/22
-7	9	1	03/05/22
-8	14	1	03/05/22
-9	12	1	03/05/22
-10	13	1	03/05/22
-11	24	2	03/05/22
-12	21	2	03/05/22
-13	23	2	03/05/22
-14	3	2	03/05/22
-15	4	2	03/05/22
-16	14	2	03/05/22
-17	31	2	03/05/22
-18	18	2	03/05/22
-19	30	2	03/05/22
-20	10	2	03/05/22
-21	14	3	03/05/22
-22	3	3	03/05/22
-23	7	3	03/05/22
-24	6	3	03/05/22
-25	31	3	03/05/22
-26	33	3	03/05/22
-27	4	3	03/05/22
-28	13	3	03/05/22
-29	28	3	03/05/22
-30	12	3	03/05/22
-31	15	4	03/05/22
-32	37	4	03/05/22
-33	20	4	03/05/22
-34	22	4	03/05/22
-35	14	4	03/05/22
-36	8	4	03/05/22
-37	5	4	03/05/22
-38	6	4	03/05/22
-39	17	4	03/05/22
-40	24	4	03/05/22
-41	3	5	03/05/22
-42	18	5	03/05/22
-43	9	5	03/05/22
-44	27	5	03/05/22
-45	7	5	03/05/22
-46	8	5	03/05/22
-47	26	5	03/05/22
-48	10	5	03/05/22
-49	6	5	03/05/22
-50	15	5	03/05/22
-56	36	6	2022-03-05 13:42:54.71143+00
-57	1	6	2022-03-05 13:47:10.638535+00
-90	38	6	2022-03-05 13:51:30.547934+00
+1	22	1	03/08/22
+2	7	1	03/08/22
+3	13	1	03/08/22
+4	21	1	03/08/22
+5	20	1	03/08/22
+6	14	1	03/08/22
+7	5	1	03/08/22
+8	36	1	03/08/22
+9	31	1	03/08/22
+10	29	1	03/08/22
+11	30	2	03/08/22
+12	35	2	03/08/22
+13	28	2	03/08/22
+14	12	2	03/08/22
+15	19	2	03/08/22
+16	2	2	03/08/22
+17	14	2	03/08/22
+18	23	2	03/08/22
+19	5	2	03/08/22
+20	21	2	03/08/22
+21	9	3	03/08/22
+22	3	3	03/08/22
+23	37	3	03/08/22
+24	25	3	03/08/22
+25	33	3	03/08/22
+26	4	3	03/08/22
+27	23	3	03/08/22
+28	15	3	03/08/22
+29	27	3	03/08/22
+30	7	3	03/08/22
+31	33	4	03/08/22
+32	9	4	03/08/22
+33	28	4	03/08/22
+34	22	4	03/08/22
+35	19	4	03/08/22
+36	2	4	03/08/22
+37	27	4	03/08/22
+38	14	4	03/08/22
+39	29	4	03/08/22
+40	20	4	03/08/22
+41	2	5	03/08/22
+42	6	5	03/08/22
+43	26	5	03/08/22
+44	33	5	03/08/22
+45	22	5	03/08/22
+46	20	5	03/08/22
+47	8	5	03/08/22
+48	27	5	03/08/22
+49	37	5	03/08/22
+50	30	5	03/08/22
+51	1	6	2022-03-09 00:56:10.978144+00
+52	38	6	2022-03-09 01:17:23.059957+00
+53	39	6	2022-03-09 01:18:37.322293+00
+54	40	6	2022-03-09 01:18:37.322293+00
+55	41	6	2022-03-09 01:18:37.322293+00
+56	42	6	2022-03-09 01:18:37.322293+00
 \.
 
 
@@ -271,7 +274,6 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 4	John	Doe 3	user3@test.com	test
 5	John	Doe 4	user4@test.com	test
 6	Lauren	Edwards	Hey@LEdwards.co	hi
-7	Lauren	Hill	hello@gmail.com	hi
 \.
 
 
@@ -279,21 +281,21 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 -- Name: stocks_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.stocks_stock_id_seq', 45, true);
+SELECT pg_catalog.setval('public.stocks_stock_id_seq', 42, true);
 
 
 --
 -- Name: user_stocks_user_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 90, true);
+SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 56, true);
 
 
 --
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 7, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 6, true);
 
 
 --

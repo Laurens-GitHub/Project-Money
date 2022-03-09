@@ -1,7 +1,7 @@
 """Models for stock viewing app."""
 
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -41,7 +41,7 @@ class Stock(db.Model):
         return f"<Stock id={self.stock_id}, symbol={self.symbol}, company={self.company}>"
 
 
-class User_stock(db.Model):
+class UserStock(db.Model):
     """A stock saved by a user."""
 
     __tablename__ = "user_stocks"
@@ -65,6 +65,7 @@ class User_stock(db.Model):
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///market", echo=True):
+    """Connects to the database"""
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
     flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

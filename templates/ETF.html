@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Stock Quote{% endblock %}
+{% block title %}ETF Quote{% endblock %}
 
 {% block body %}
 <!-- Things to include on the front page: market clock, movers -->
@@ -17,6 +17,7 @@
     <h2>Here's your {{ symbol }} quote:</h2>
 
     <p>{{ company }} ({{ symbol }})</p>
+    <p>{{ curr_price }}</p>
     <p>{{ dollar_chg }}</p>
     <p>{{ pct_chg }}%</p>
     <p>{{ prev_close }}</p>
