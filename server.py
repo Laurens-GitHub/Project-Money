@@ -87,8 +87,7 @@ def show_stock_data():
     top_headlines = newsapi.get_top_headlines(
                                           category='business',
                                           country='us',
-                                          language='en'
-                                                                                    )
+                                          language='en')
 
     return render_template('homepage.html',
                            pformat=pformat,
@@ -112,6 +111,7 @@ def get_stock_quote():
     symbol = request.args.get("search")
     quote_query = {"symbols": symbol}
     rapid_query = {"symbol": symbol, "region": "US"}
+    #TODO: replace with rapid price query
     price_query = {"symbols": symbol, "range": "1d", "interval": "15m"}
     rapid_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com",
     'x-rapidapi-key': RAPID_KEY}
@@ -380,6 +380,14 @@ def get_stock_quote():
         # quote_response == {'message': 'Limit Exceeded'}:
         return render_template("limit.html")
 
+@app.route("/price_chart.json")
+def send_chart_data():
+    """Sends chart data by ticker"""
+
+    symbol = request.args.get("symbol")
+    price_url = f'https://yfapi.net/v8/finance/chart/{symbol}'
+    price_query = {"symbols": symbol, "range": "1d", "interval": "15m"}
+    price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
 
 #=======================================#
 ###############   USERS   ###############
@@ -390,7 +398,7 @@ def register_user():
     """Register a new user."""
 
     first_name = request.form.get("first_name")
-    last_name = request.form.get("last_name")
+    last_name = request.form.get("las"""t_name")
     email = request.form.get("email")
     password = request.form.get("password")
 
