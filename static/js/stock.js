@@ -1,21 +1,21 @@
 "use strict";
 
-fetch('/price_chart.json')
+function renderStockChart(symbol) {
+
+fetch('/price_chart.json'+'?symbol='+symbol)
   .then(response => response.json())
   .then(responseJson => {
-      // .map is another way to loop. It applies a function to every item in an iterable
-      // In this case, we're creating a new JS object for every item in the list dailyTotal
-    const data = responseJson.data.map(dailyTotal => ({
-      x: dailyTotal.date,
-      y: dailyTotal.melons_sold,
-    }));
+    const data = {
+      x: responseJson['chart']['result'][0]['timestamp'],
+      y: responseJson['chart']['result'][0]['indicators']['quote'][0]['close']
+    };
 
     new Chart(document.querySelector('#line-time'), {
       type: 'line',
       data: {
         datasets: [
           {
-            label: 'All Melons',
+            label: 'Price',
             data,
           },
         ],
@@ -33,3 +33,5 @@ fetch('/price_chart.json')
       },
     });
   });
+
+}

@@ -3,6 +3,8 @@
 {% block title %}Stock Quote{% endblock %}
 
 {% block body %}
+
+<h2>LOOK AT THIS GARBAGE</h2>
 <div id="favorite">
     <form action="/favorites" method="POST">
         <input type="submit" name="favorite" value="favorite">
@@ -11,14 +13,14 @@
     </form>
 </div>
 
-<div id="charter">
+<!-- <div id="charter">
     <form action="/price_chart.json" method="GET">
         <input type="hidden" name="symbol" value="{{ symbol }}">
     </form>
-</div>
+</div> -->
 
 <div>
-    <p>{{ company }} ({{ symbol }})</p>
+    <p>{{ company }} </p> <p id="symbol"> {{ symbol }}</p>
     <p>{{ curr_price }}</p>
     <p>{{ dollar_chg }}</p>
     <p>{{ pct_chg }}%</p>
@@ -35,10 +37,23 @@
     <p>{{ eps }}</p>
     <p>{{ market_cap }}</p>
 
+    <div>
+    <h2>Price History</h2>
+    <canvas id="line-time"></canvas>
+  </div>
     <pre>{{ pformat(stock_json) }}</pre>
     <pre>{{ pformat(price_json) }}</pre>
 
 </div>
+
 <script src="/static/js/stock.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.1.0/dist/chartjs-adapter-luxon.min.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+
+window.onload = (event) =>  {
+    renderStockChart("{{symbol}}");
+  }; </script>
 {% endblock %}

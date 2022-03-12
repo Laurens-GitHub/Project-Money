@@ -386,8 +386,12 @@ def send_chart_data():
 
     symbol = request.args.get("symbol")
     price_url = f'https://yfapi.net/v8/finance/chart/{symbol}'
-    price_query = {"symbols": symbol, "range": "1d", "interval": "15m"}
+    price_query = {"range": "1d", "interval": "15m"}
+    headers = {'X-API-KEY': STOCKS_KEY}
     price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
+    price_json = price_hist.json()
+
+    return price_json
 
 #=======================================#
 ###############   USERS   ###############
@@ -398,7 +402,7 @@ def register_user():
     """Register a new user."""
 
     first_name = request.form.get("first_name")
-    last_name = request.form.get("las"""t_name")
+    last_name = request.form.get("last_name")
     email = request.form.get("email")
     password = request.form.get("password")
 
