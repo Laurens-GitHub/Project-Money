@@ -106,23 +106,18 @@ def get_stock_quote():
     """Show a stock quote data."""
     quote_url = "https://yfapi.net/v6/finance/quote/"
     rapid_url = "https://yh-finance.p.rapidapi.com/stock/v2/get-summary"
-    price_url = "https://yfapi.net/v8/finance/spark" #gets price history
 
     symbol = request.args.get("search")
     quote_query = {"symbols": symbol}
     rapid_query = {"symbol": symbol, "region": "US"}
-    #TODO: replace with rapid price query
-    price_query = {"symbols": symbol, "range": "1d", "interval": "15m"}
     rapid_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com",
     'x-rapidapi-key': RAPID_KEY}
     headers = {'X-API-KEY': STOCKS_KEY}
 
     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
-    price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
     rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
 
     quote_response = quote.json()
-    price_response = price_hist.json()
     rapid_response = rapid_quote.json()
     quote_type = quote_response['quoteResponse']['result'][0]['quoteType']
 # known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
@@ -189,9 +184,7 @@ def get_stock_quote():
                                 eps=eps,
                                 market_cap=market_cap,
                                 pformat=pformat,
-                                stock_json=quote_response,
-                                price_json=price_response
-                                )
+                                stock_json=quote_response)
 
     elif quote_type == "ETF":
         rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
@@ -238,9 +231,7 @@ def get_stock_quote():
                                 turnover=turnover,
                                 fund_style=fund_style,
                                 pformat=pformat,
-                                ETF_json=quote_response,
-                                price_json=price_response
-                                )
+                                ETF_json=quote_response)
 
     elif quote_type == "INDEX":
         symbol = quote_response['quoteResponse']['result'][0]['symbol']
@@ -266,7 +257,7 @@ def get_stock_quote():
                                 day_low=day_low,
                                 year_high=year_high,
                                 year_low=year_low,
-    pformat=pformat, index_json=quote_response, price_json=price_response)
+    pformat=pformat, index_json=quote_response)
 
     elif quote_type == "MUTUALFUND":
         rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
@@ -309,8 +300,7 @@ def get_stock_quote():
                                 inception=inception,
                                 holdings=holdings,
                                 pformat=pformat,
-                                fund_json=rapid_response,
-                                price_json=price_response)
+                                fund_json=rapid_response)
 
     elif quote_type == "CURRENCY":
         symbol = quote_response['quoteResponse']['result'][0]['symbol']
@@ -341,8 +331,7 @@ def get_stock_quote():
                                 year_high=year_high,
                                 year_low=year_low,
                                 pformat=pformat,
-                                currency_json=quote_response,
-                                price_json=price_response)
+                                currency_json=quote_response)
 
     elif quote_type == "CRYPTOCURRENCY":
         rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
@@ -373,8 +362,7 @@ def get_stock_quote():
                                 day_volume=day_volume,
                                 circulating=circulating,
                                 pformat=pformat,
-                                crypto_json=rapid_response,
-                                price_json=price_response)
+                                crypto_json=rapid_response)
 
     else:
         # quote_response == {'message': 'Limit Exceeded'}:
@@ -386,7 +374,7 @@ def send_chart_data():
 
     symbol = request.args.get("symbol")
     price_url = f'https://yfapi.net/v8/finance/chart/{symbol}'
-    price_query = {"range": "1d", "interval": "15m"}
+    price_query = {"range": "1d", "interval": "1m"}
     headers = {'X-API-KEY': STOCKS_KEY}
     price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
     price_json = price_hist.json()
@@ -477,6 +465,7 @@ def create_user_stock():
         new_stock = crud.create_stock(symbol, company)
         db.session.add(new_stock)
         db.session.commit()
+
 #and add the user stock:
         created_stock = crud.get_stock_by_symbol(symbol)
         stock_id = created_stock.stock_id

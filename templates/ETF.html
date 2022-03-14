@@ -14,8 +14,6 @@
 
 <div>
 
-    <h2>Here's your {{ symbol }} quote:</h2>
-
     <p>{{ company }} ({{ symbol }})</p>
     <p>{{ curr_price }}</p>
     <p>{{ dollar_chg }}</p>
@@ -37,8 +35,6 @@
     <p>{{ fund_style }}</p>
 
     <pre>{{ pformat(ETF_json) }}</pre>
-    <pre>{{ pformat(price_json) }}</pre>
-
 </div>
 <script src="/static/js/stock.js"></script>
 {% endblock %}
