@@ -103,11 +103,6 @@ def delete_user_stock(user_id, stock_id):
 
     return deleted_stock
 
-# def get_movie_by_id(movie_id):
-#     """Return a movie by primary key."""
-
-#     return Movie.query.get(movie_id)
-
 if __name__ == "__main__":
     from server import app
 

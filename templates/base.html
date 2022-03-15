@@ -11,17 +11,26 @@
   </head>
   <body>
       <a href="http://localhost:5000/">Home</a>
-    <div>
-        <form action="/quote" method="GET">
-            Search <input type="text" name="search">
-            <input type="submit">
-        </form>
-      </div>
     {% for msg in get_flashed_messages() %}
     <p class="flash-msg">
       {{ msg }}
     </p>
   {% endfor %}
+      <div>
+        <form action="/quote" method="GET">
+            Search <input type="text" name="search">
+            <input type="submit">
+        </form>
+      </div>
+    {%if session.get("user_email")%}
+    <div>
+    <form action="/user_profile">
+        <input type="submit" name="profile" value="My Profile">
+    </form>
+    </div>
+    {% endif %}
+
+
     {% block body %}
 
       {% endblock %}
