@@ -4,6 +4,7 @@
 
 {% block body %}
 
+{%if session.get("user_email")%}
 <div id="favorite">
     <form action="/favorites" method="POST">
         <input type="submit" name="favorite" value="favorite">
@@ -11,12 +12,7 @@
         <input type="hidden" name="company" value="{{ company }}">
     </form>
 </div>
-
-<!-- <div id="charter">
-    <form action="/price_chart.json" method="GET">
-        <input type="hidden" name="symbol" value="{{ symbol }}">
-    </form>
-</div> -->
+{% endif %}
 
 <div>
     <p>{{ company }} </p> <p id="symbol"> {{ symbol }}</p>

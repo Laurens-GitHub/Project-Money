@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.6 (Ubuntu 13.6-1.pgdg20.04+1)
--- Dumped by pg_dump version 13.6 (Ubuntu 13.6-1.pgdg20.04+1)
+-- Dumped from database version 13.4 (Ubuntu 13.4-4.pgdg20.04+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-4.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,8 +61,8 @@ ALTER SEQUENCE public.stocks_stock_id_seq OWNED BY public.stocks.stock_id;
 
 CREATE TABLE public.user_stocks (
     user_stock_id integer NOT NULL,
-    stock_id integer NOT NULL,
-    user_id integer NOT NULL,
+    stock_id integer,
+    user_id integer,
     date_saved character varying
 );
 
@@ -191,11 +191,7 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 35	AAPL	Apple Inc
 36	F	Ford Motor Co
 37	QCOM	Qualcomm Inc
-38	SWPPX	Schwab S&P 500 Index Fund
-39	^DJI	Dow Jones Industrial Average
-40	BTC-USD	Bitcoin USD
-41	QQQ	Invesco QQQ Trust, Series 1
-42	EUR=X	USD/EUR
+38	SNAP	Snap Inc.
 \.
 
 
@@ -204,62 +200,57 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 --
 
 COPY public.user_stocks (user_stock_id, stock_id, user_id, date_saved) FROM stdin;
-1	22	1	03/08/22
-2	7	1	03/08/22
-3	13	1	03/08/22
-4	21	1	03/08/22
-5	20	1	03/08/22
-6	14	1	03/08/22
-7	5	1	03/08/22
-8	36	1	03/08/22
-9	31	1	03/08/22
-10	29	1	03/08/22
-11	30	2	03/08/22
-12	35	2	03/08/22
-13	28	2	03/08/22
-14	12	2	03/08/22
-15	19	2	03/08/22
-16	2	2	03/08/22
-17	14	2	03/08/22
-18	23	2	03/08/22
-19	5	2	03/08/22
-20	21	2	03/08/22
-21	9	3	03/08/22
-22	3	3	03/08/22
-23	37	3	03/08/22
-24	25	3	03/08/22
-25	33	3	03/08/22
-26	4	3	03/08/22
-27	23	3	03/08/22
-28	15	3	03/08/22
-29	27	3	03/08/22
-30	7	3	03/08/22
-31	33	4	03/08/22
-32	9	4	03/08/22
-33	28	4	03/08/22
-34	22	4	03/08/22
-35	19	4	03/08/22
-36	2	4	03/08/22
-37	27	4	03/08/22
-38	14	4	03/08/22
-39	29	4	03/08/22
-40	20	4	03/08/22
-41	2	5	03/08/22
-42	6	5	03/08/22
-43	26	5	03/08/22
-44	33	5	03/08/22
-45	22	5	03/08/22
-46	20	5	03/08/22
-47	8	5	03/08/22
-48	27	5	03/08/22
-49	37	5	03/08/22
-50	30	5	03/08/22
-51	1	6	2022-03-09 00:56:10.978144+00
-52	38	6	2022-03-09 01:17:23.059957+00
-53	39	6	2022-03-09 01:18:37.322293+00
-54	40	6	2022-03-09 01:18:37.322293+00
-55	41	6	2022-03-09 01:18:37.322293+00
-56	42	6	2022-03-09 01:18:37.322293+00
+1	7	1	02/25/22
+2	32	1	02/25/22
+3	2	1	02/25/22
+4	8	1	02/25/22
+5	6	1	02/25/22
+6	9	1	02/25/22
+7	20	1	02/25/22
+8	13	1	02/25/22
+9	2	1	02/25/22
+10	36	1	02/25/22
+11	3	2	02/25/22
+12	37	2	02/25/22
+13	8	2	02/25/22
+14	2	2	02/25/22
+15	37	2	02/25/22
+16	14	2	02/25/22
+17	37	2	02/25/22
+18	34	2	02/25/22
+19	1	2	02/25/22
+20	3	2	02/25/22
+21	32	3	02/25/22
+22	26	3	02/25/22
+23	33	3	02/25/22
+24	2	3	02/25/22
+25	21	3	02/25/22
+26	2	3	02/25/22
+27	15	3	02/25/22
+28	15	3	02/25/22
+29	17	3	02/25/22
+30	12	3	02/25/22
+31	23	4	02/25/22
+32	27	4	02/25/22
+33	6	4	02/25/22
+34	7	4	02/25/22
+35	1	4	02/25/22
+36	30	4	02/25/22
+37	12	4	02/25/22
+38	2	4	02/25/22
+39	22	4	02/25/22
+40	31	4	02/25/22
+41	26	5	02/25/22
+42	19	5	02/25/22
+43	20	5	02/25/22
+44	20	5	02/25/22
+45	28	5	02/25/22
+46	18	5	02/25/22
+47	4	5	02/25/22
+48	26	5	02/25/22
+49	25	5	02/25/22
+50	17	5	02/25/22
+51	38	6	02/25/22
 \.
 
 
@@ -273,7 +264,7 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 3	John	Doe 2	user2@test.com	test
 4	John	Doe 3	user3@test.com	test
 5	John	Doe 4	user4@test.com	test
-6	Lauren	Edwards	Hey@LEdwards.co	hi
+6	Lauren	Edwards	Hey@LEdwards.co	hello
 \.
 
 
@@ -288,7 +279,7 @@ SELECT pg_catalog.setval('public.stocks_stock_id_seq', 42, true);
 -- Name: user_stocks_user_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 56, true);
+SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 51, true);
 
 
 --
@@ -312,14 +303,6 @@ ALTER TABLE ONLY public.stocks
 
 ALTER TABLE ONLY public.stocks
     ADD CONSTRAINT stocks_symbol_key UNIQUE (symbol);
-
-
---
--- Name: user_stocks unique_user_stock; Type: CONSTRAINT; Schema: public; Owner: hackbright
---
-
-ALTER TABLE ONLY public.user_stocks
-    ADD CONSTRAINT unique_user_stock UNIQUE (user_id, stock_id);
 
 
 --

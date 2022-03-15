@@ -109,12 +109,9 @@ def get_stock_quote():
     symbol = request.args.get("search")
     quote_query = {"symbols": symbol}
     headers = {'X-API-KEY': STOCKS_KEY}
-
     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
-    # rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-
     quote_response = quote.json()
-    # rapid_response = rapid_quote.json()
+
 # known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
 
     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
@@ -130,6 +127,8 @@ def get_stock_quote():
                             search_results=search_results, pformat=pformat,
                             user_query=query)
 
+    elif "." in symbol:
+        return render_template("later.html")
 
 
 #test template
@@ -142,7 +141,8 @@ def get_stock_quote():
         rapid_url = "https://yh-finance.p.rapidapi.com/stock/v2/get-summary"
         rapid_query = {"symbol": symbol, "region": "US"}
         rapid_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com", 'x-rapidapi-key': RAPID_KEY}
-
+        rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
+        rapid_response = rapid_quote.json()
 
         if quote_type == 'ECNQUOTE':
             quote_url = "https://yfapi.net/v6/finance/autocomplete"
@@ -160,8 +160,6 @@ def get_stock_quote():
 
         elif quote_type == "EQUITY":
 
-            rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-            rapid_response = rapid_quote.json()
             symbol = quote_response['quoteResponse']['result'][0]['symbol']
             company = quote_response['quoteResponse']['result'][0]['shortName']
             curr_price = format(quote_response['quoteResponse']['result'][0]['regularMarketPrice'], ".2f")
@@ -201,8 +199,6 @@ def get_stock_quote():
                                     stock_json=quote_response)
 
         elif quote_type == "ETF":
-            rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-            rapid_response = rapid_quote.json()
             symbol = quote_response['quoteResponse']['result'][0]['symbol']
             company = quote_response['quoteResponse']['result'][0]['shortName']
             curr_price = format(quote_response['quoteResponse']['result'][0]['regularMarketPrice'], ".2f")
@@ -216,6 +212,7 @@ def get_stock_quote():
             day_low = format(quote_response['quoteResponse']['result'][0]['regularMarketDayLow'], ".2f")
             year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
             year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
+#TODO: see if you can fix not getting the price/equity ratio & eps
             pe_ratio = format(quote_response['quoteResponse']['result'][0]['trailingPE'], ".2f")
             eps = format(quote_response['quoteResponse']['result'][0]['epsTrailingTwelveMonths'], ".2f")
             volume = rapid_response['price']['regularMarketVolume']['fmt']
@@ -274,47 +271,48 @@ def get_stock_quote():
         pformat=pformat, index_json=quote_response)
 
         elif quote_type == "MUTUALFUND":
-            rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-            rapid_response = rapid_quote.json()
-            symbol = rapid_response['symbol']
-            company = rapid_response['price']['longName']
-            curr_price = rapid_response['price']['regularMarketPrice']['fmt']
-            dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
-            pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
-            prev_close = rapid_response['price']['regularMarketPreviousClose']['fmt']
-            year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
-            year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
-            ytd_return = rapid_response['summaryDetail']['ytdReturn']['fmt']
-            expense_ratio = rapid_response['defaultKeyStatistics']['annualReportExpenseRatio']['fmt']
-            total_assets = rapid_response['defaultKeyStatistics']['totalAssets']['fmt']
-            fund_style = rapid_response['fundProfile']['categoryName']
-            return_yield = rapid_response['summaryDetail']['yield']['fmt']
-            turnover = rapid_response['defaultKeyStatistics']['annualHoldingsTurnover']['fmt']
-            rating = rapid_response['defaultKeyStatistics']['morningStarOverallRating']['fmt']
-            risk = rapid_response['defaultKeyStatistics']['morningStarRiskRating']['fmt']
-            inception = rapid_response['defaultKeyStatistics']['fundInceptionDate']['fmt']
-            holdings = rapid_response['topHoldings']['holdings']
-            return render_template("fund.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    prev_close=prev_close,
-                                    year_high=year_high,
-                                    year_low=year_low,
-                                    ytd_return=ytd_return,
-                                    expense_ratio=expense_ratio,
-                                    total_assets=total_assets,
-                                    fund_style=fund_style,
-                                    return_yield=return_yield,
-                                    turnover=turnover,
-                                    rating=rating,
-                                    risk=risk,
-                                    inception=inception,
-                                    holdings=holdings,
-                                    pformat=pformat,
-                                    fund_json=rapid_response)
+            if rapid_response['defaultKeyStatistics'] == {}:
+                return render_template("test.html", pformat=pformat, fund_json=quote_response)
+            else:
+                symbol = rapid_response['symbol']
+                company = rapid_response['price']['longName']
+                curr_price = rapid_response['price']['regularMarketPrice']['fmt']
+                dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
+                pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
+                prev_close = rapid_response['price']['regularMarketPreviousClose']['fmt']
+                year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
+                year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
+                ytd_return = rapid_response['summaryDetail']['ytdReturn']['fmt']
+                expense_ratio = rapid_response['defaultKeyStatistics']['annualReportExpenseRatio']['fmt']
+                total_assets = rapid_response['defaultKeyStatistics']['totalAssets']['fmt']
+                fund_style = rapid_response['fundProfile']['categoryName']
+                return_yield = rapid_response['summaryDetail']['yield']['fmt']
+                turnover = rapid_response['defaultKeyStatistics']['annualHoldingsTurnover']['fmt']
+                rating = rapid_response['defaultKeyStatistics']['morningStarOverallRating']['fmt']
+                risk = rapid_response['defaultKeyStatistics']['morningStarRiskRating']['fmt']
+                inception = rapid_response['defaultKeyStatistics']['fundInceptionDate']['fmt']
+                holdings = rapid_response['topHoldings']['holdings']
+                return render_template("fund.html",
+                                        symbol=symbol,
+                                        company=company,
+                                        curr_price=curr_price,
+                                        dollar_chg=dollar_chg,
+                                        pct_chg=pct_chg,
+                                        prev_close=prev_close,
+                                        year_high=year_high,
+                                        year_low=year_low,
+                                        ytd_return=ytd_return,
+                                        expense_ratio=expense_ratio,
+                                        total_assets=total_assets,
+                                        fund_style=fund_style,
+                                        return_yield=return_yield,
+                                        turnover=turnover,
+                                        rating=rating,
+                                        risk=risk,
+                                        inception=inception,
+                                        holdings=holdings,
+                                        pformat=pformat,
+                                        fund_json=rapid_response)
 
         elif quote_type == "CURRENCY":
             symbol = quote_response['quoteResponse']['result'][0]['symbol']
@@ -507,6 +505,7 @@ def create_user_stock():
 @app.route("/user_profile", methods=["GET", "POST"])
 def show_user_favorites():
     logged_in_email = session.get("user_email")
+    user = crud.get_user_by_email(logged_in_email)
 
     return render_template("/user_profile.html")
 
