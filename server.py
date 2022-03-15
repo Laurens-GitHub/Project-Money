@@ -504,10 +504,26 @@ def create_user_stock():
 
 @app.route("/user_profile", methods=["GET", "POST"])
 def show_user_favorites():
+    """Return a user's favorite stocks"""
     logged_in_email = session.get("user_email")
     user = crud.get_user_by_email(logged_in_email)
+    faves = crud.get_user_stocks(user.user_id)
 
-    return render_template("/user_profile.html")
+    if faves is None:
+
+        return render_template("/user-profile.html", saved_stocks=None)
+
+    else:
+        user_stocks_by_id = []
+        saved_stocks = {}
+        our_user = user.first_name
+        for count, value in enumerate(faves):
+            user_stocks_by_id.append(faves[count].stock_id)
+        for count, value in enumerate(user_stocks_by_id):
+           stock = crud.get_stock_by_id(value)
+           saved_stocks[stock.symbol] = stock.company, faves[count].date_saved
+
+        return render_template("/user-profile.html", saved_stocks=saved_stocks, our_user=our_user)
 
 if __name__ == "__main__":
     connect_to_db(app)

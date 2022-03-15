@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.4 (Ubuntu 13.4-4.pgdg20.04+1)
--- Dumped by pg_dump version 13.4 (Ubuntu 13.4-4.pgdg20.04+1)
+-- Dumped from database version 13.6 (Ubuntu 13.6-1.pgdg20.04+1)
+-- Dumped by pg_dump version 13.6 (Ubuntu 13.6-1.pgdg20.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61,8 +61,8 @@ ALTER SEQUENCE public.stocks_stock_id_seq OWNED BY public.stocks.stock_id;
 
 CREATE TABLE public.user_stocks (
     user_stock_id integer NOT NULL,
-    stock_id integer,
-    user_id integer,
+    stock_id integer NOT NULL,
+    user_id integer NOT NULL,
     date_saved character varying
 );
 
@@ -191,7 +191,6 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 35	AAPL	Apple Inc
 36	F	Ford Motor Co
 37	QCOM	Qualcomm Inc
-38	SNAP	Snap Inc.
 \.
 
 
@@ -200,57 +199,56 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 --
 
 COPY public.user_stocks (user_stock_id, stock_id, user_id, date_saved) FROM stdin;
-1	7	1	02/25/22
-2	32	1	02/25/22
-3	2	1	02/25/22
-4	8	1	02/25/22
-5	6	1	02/25/22
-6	9	1	02/25/22
-7	20	1	02/25/22
-8	13	1	02/25/22
-9	2	1	02/25/22
-10	36	1	02/25/22
-11	3	2	02/25/22
-12	37	2	02/25/22
-13	8	2	02/25/22
-14	2	2	02/25/22
-15	37	2	02/25/22
-16	14	2	02/25/22
-17	37	2	02/25/22
-18	34	2	02/25/22
-19	1	2	02/25/22
-20	3	2	02/25/22
-21	32	3	02/25/22
-22	26	3	02/25/22
-23	33	3	02/25/22
-24	2	3	02/25/22
-25	21	3	02/25/22
-26	2	3	02/25/22
-27	15	3	02/25/22
-28	15	3	02/25/22
-29	17	3	02/25/22
-30	12	3	02/25/22
-31	23	4	02/25/22
-32	27	4	02/25/22
-33	6	4	02/25/22
-34	7	4	02/25/22
-35	1	4	02/25/22
-36	30	4	02/25/22
-37	12	4	02/25/22
-38	2	4	02/25/22
-39	22	4	02/25/22
-40	31	4	02/25/22
-41	26	5	02/25/22
-42	19	5	02/25/22
-43	20	5	02/25/22
-44	20	5	02/25/22
-45	28	5	02/25/22
-46	18	5	02/25/22
-47	4	5	02/25/22
-48	26	5	02/25/22
-49	25	5	02/25/22
-50	17	5	02/25/22
-51	38	6	02/25/22
+1	9	1	03/15/22
+2	36	1	03/15/22
+3	6	1	03/15/22
+4	35	1	03/15/22
+5	19	1	03/15/22
+6	20	1	03/15/22
+7	25	1	03/15/22
+8	14	1	03/15/22
+9	17	1	03/15/22
+10	28	1	03/15/22
+11	34	2	03/15/22
+12	5	2	03/15/22
+13	22	2	03/15/22
+14	24	2	03/15/22
+15	19	2	03/15/22
+16	28	2	03/15/22
+17	30	2	03/15/22
+18	17	2	03/15/22
+19	37	2	03/15/22
+20	20	2	03/15/22
+21	11	3	03/15/22
+22	25	3	03/15/22
+23	28	3	03/15/22
+24	27	3	03/15/22
+25	17	3	03/15/22
+26	10	3	03/15/22
+27	2	3	03/15/22
+28	35	3	03/15/22
+29	18	3	03/15/22
+30	19	3	03/15/22
+31	25	4	03/15/22
+32	37	4	03/15/22
+33	3	4	03/15/22
+34	24	4	03/15/22
+35	28	4	03/15/22
+36	2	4	03/15/22
+37	23	4	03/15/22
+38	33	4	03/15/22
+39	35	4	03/15/22
+40	18	4	03/15/22
+41	23	5	03/15/22
+42	36	5	03/15/22
+43	26	5	03/15/22
+44	10	5	03/15/22
+45	4	5	03/15/22
+46	12	5	03/15/22
+47	21	5	03/15/22
+48	32	5	03/15/22
+49	24	5	03/15/22
+50	20	5	03/15/22
 \.
 
 
@@ -264,7 +262,6 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 3	John	Doe 2	user2@test.com	test
 4	John	Doe 3	user3@test.com	test
 5	John	Doe 4	user4@test.com	test
-6	Lauren	Edwards	Hey@LEdwards.co	hello
 \.
 
 
@@ -272,21 +269,21 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 -- Name: stocks_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.stocks_stock_id_seq', 42, true);
+SELECT pg_catalog.setval('public.stocks_stock_id_seq', 37, true);
 
 
 --
 -- Name: user_stocks_user_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 51, true);
+SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 50, true);
 
 
 --
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 6, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 5, true);
 
 
 --
@@ -303,6 +300,14 @@ ALTER TABLE ONLY public.stocks
 
 ALTER TABLE ONLY public.stocks
     ADD CONSTRAINT stocks_symbol_key UNIQUE (symbol);
+
+
+--
+-- Name: user_stocks unique_user_stock; Type: CONSTRAINT; Schema: public; Owner: hackbright
+--
+
+ALTER TABLE ONLY public.user_stocks
+    ADD CONSTRAINT unique_user_stock UNIQUE (user_id, stock_id);
 
 
 --

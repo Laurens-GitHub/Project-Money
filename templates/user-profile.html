@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block body %}
+<h1>{{our_user}}'s Favorites</h1>
+{%if saved_stocks==None%}
+<p>You haven't saved any favorites yet.</p>
+<img src="https://media4.giphy.com/media/26hkhPJ5hmdD87HYA/giphy.gif">
+
+{%else%}
+<table>
+    <tr>
+      <th>Symbol</th>
+      <th>Name</th>
+      <th>Date Saved</th>
+    </tr>
+
+{%for stock in saved_stocks%}
+    <tr>
+        <td>{{stock}}</td>
+        <td>{{saved_stocks[stock][0]}}</td>
+        <td>{{saved_stocks[stock][1]}}</td>
+    </tr>
+{%endfor%}
+</table>
+
+{%endif%}
+{% endblock %}
