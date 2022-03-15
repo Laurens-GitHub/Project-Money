@@ -191,6 +191,11 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 35	AAPL	Apple Inc
 36	F	Ford Motor Co
 37	QCOM	Qualcomm Inc
+38	SWPPX	Schwab S&P 500 Index Fund
+39	^DJI	Dow Jones Industrial Average
+40	BTC-USD	Bitcoin USD
+41	QQQ	Invesco QQQ Trust, Series 1
+42	EUR=X	USD/EUR
 \.
 
 
@@ -199,56 +204,62 @@ COPY public.stocks (stock_id, symbol, company) FROM stdin;
 --
 
 COPY public.user_stocks (user_stock_id, stock_id, user_id, date_saved) FROM stdin;
-1	9	1	03/15/22
-2	36	1	03/15/22
-3	6	1	03/15/22
-4	35	1	03/15/22
-5	19	1	03/15/22
-6	20	1	03/15/22
-7	25	1	03/15/22
-8	14	1	03/15/22
-9	17	1	03/15/22
-10	28	1	03/15/22
-11	34	2	03/15/22
-12	5	2	03/15/22
-13	22	2	03/15/22
-14	24	2	03/15/22
-15	19	2	03/15/22
-16	28	2	03/15/22
-17	30	2	03/15/22
-18	17	2	03/15/22
-19	37	2	03/15/22
-20	20	2	03/15/22
-21	11	3	03/15/22
-22	25	3	03/15/22
-23	28	3	03/15/22
-24	27	3	03/15/22
-25	17	3	03/15/22
-26	10	3	03/15/22
-27	2	3	03/15/22
-28	35	3	03/15/22
-29	18	3	03/15/22
-30	19	3	03/15/22
-31	25	4	03/15/22
-32	37	4	03/15/22
-33	3	4	03/15/22
-34	24	4	03/15/22
-35	28	4	03/15/22
-36	2	4	03/15/22
-37	23	4	03/15/22
-38	33	4	03/15/22
-39	35	4	03/15/22
-40	18	4	03/15/22
-41	23	5	03/15/22
-42	36	5	03/15/22
-43	26	5	03/15/22
-44	10	5	03/15/22
-45	4	5	03/15/22
-46	12	5	03/15/22
-47	21	5	03/15/22
-48	32	5	03/15/22
-49	24	5	03/15/22
-50	20	5	03/15/22
+1	22	1	03/08/22
+2	7	1	03/08/22
+3	13	1	03/08/22
+4	21	1	03/08/22
+5	20	1	03/08/22
+6	14	1	03/08/22
+7	5	1	03/08/22
+8	36	1	03/08/22
+9	31	1	03/08/22
+10	29	1	03/08/22
+11	30	2	03/08/22
+12	35	2	03/08/22
+13	28	2	03/08/22
+14	12	2	03/08/22
+15	19	2	03/08/22
+16	2	2	03/08/22
+17	14	2	03/08/22
+18	23	2	03/08/22
+19	5	2	03/08/22
+20	21	2	03/08/22
+21	9	3	03/08/22
+22	3	3	03/08/22
+23	37	3	03/08/22
+24	25	3	03/08/22
+25	33	3	03/08/22
+26	4	3	03/08/22
+27	23	3	03/08/22
+28	15	3	03/08/22
+29	27	3	03/08/22
+30	7	3	03/08/22
+31	33	4	03/08/22
+32	9	4	03/08/22
+33	28	4	03/08/22
+34	22	4	03/08/22
+35	19	4	03/08/22
+36	2	4	03/08/22
+37	27	4	03/08/22
+38	14	4	03/08/22
+39	29	4	03/08/22
+40	20	4	03/08/22
+41	2	5	03/08/22
+42	6	5	03/08/22
+43	26	5	03/08/22
+44	33	5	03/08/22
+45	22	5	03/08/22
+46	20	5	03/08/22
+47	8	5	03/08/22
+48	27	5	03/08/22
+49	37	5	03/08/22
+50	30	5	03/08/22
+51	1	6	2022-03-09 00:56:10.978144+00
+52	38	6	2022-03-09 01:17:23.059957+00
+53	39	6	2022-03-09 01:18:37.322293+00
+54	40	6	2022-03-09 01:18:37.322293+00
+55	41	6	2022-03-09 01:18:37.322293+00
+56	42	6	2022-03-09 01:18:37.322293+00
 \.
 
 
@@ -262,6 +273,7 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 3	John	Doe 2	user2@test.com	test
 4	John	Doe 3	user3@test.com	test
 5	John	Doe 4	user4@test.com	test
+6	Lauren	Edwards	Hey@LEdwards.co	hi
 \.
 
 
@@ -269,21 +281,21 @@ COPY public.users (user_id, first_name, last_name, email, password) FROM stdin;
 -- Name: stocks_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.stocks_stock_id_seq', 37, true);
+SELECT pg_catalog.setval('public.stocks_stock_id_seq', 42, true);
 
 
 --
 -- Name: user_stocks_user_stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 50, true);
+SELECT pg_catalog.setval('public.user_stocks_user_stock_id_seq', 56, true);
 
 
 --
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hackbright
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 5, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 6, true);
 
 
 --
