@@ -48,41 +48,19 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 def show_stock_data():
     """Shows stock data"""
 
-    # url = "https://yfapi.net/v6/finance/quote"
-    #querystring = {"symbols":"AAPL"}
-
     quote_url = "https://yfapi.net/v6/finance/quote"
     trending_url = "https://yfapi.net/v1/finance/trending/US"
-    summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
 
     trend_query = {"region":"US"}
     quote_query = {"symbols":".INX,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB"}
-    summary_query = {"lang":"en", "region":"US"}
 
     headers = {'X-API-KEY': STOCKS_KEY}
 
     trends = requests.request("GET", trending_url, headers=headers, params=trend_query)
     quotes = requests.request("GET", quote_url, headers=headers, params=quote_query)
-    summary = requests.request("GET", summary_url, headers=headers, params=summary_query)
     trends_json = trends.json()
     quotes_json = quotes.json()
-    summary_json = summary.json()
 
-    # conn = http.client.HTTPSConnection('api.marketaux.com')
-
-    # params = urllib.parse.urlencode({
-    #     'api_token': NEWS_KEY2,
-    #     'symbols': 'AAPL,TSLA',
-    #     'limit': 3,
-    #     })
-
-    # conn.request('GET', '/v1/news/all?{}'.format(params))
-
-    # res = conn.getresponse()
-    # news = res.read()
-    # print(type(news))
-
-    # data = requests.request("GET", url, headers=headers, params=querystring)
     newsapi = NewsApiClient(NEWS_KEY)
     top_headlines = newsapi.get_top_headlines(
                                           category='business',
@@ -96,7 +74,16 @@ def show_stock_data():
                            summary_data=summary_json,
                            news_data=top_headlines)
 
+@app.route('/market_summary.json')
+def send_market_summary():
+    """Sends major index data"""
+    summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
+    summary_query = {"lang":"en", "region":"US"}
+    headers = {'X-API-KEY': STOCKS_KEY}
+    summary = requests.request("GET", summary_url, headers=headers, params=summary_query)
+    summary_json = summary.json()
 
+    return summary_json
 #=======================================#
 ###############   QUOTES   ##############
 #=======================================#
