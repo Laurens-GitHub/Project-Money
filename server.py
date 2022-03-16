@@ -54,7 +54,6 @@ def show_stock_data():
                            pformat=pformat,
                            quote_data=quotes_json,
                            trend_data=trends_json,
-                           summary_data=summary_json,
                            news_data=top_headlines)
 
 @app.route('/market_summary.json')
