@@ -48,10 +48,10 @@
   </form>
 {% endif %}
 
-
-<div>
+<div id="summary">
 
 </div>
+
 
     <div id="results-as-json">
         <h2>Results as JSON</h2>
@@ -62,4 +62,9 @@
         <pre>{{ pformat(trend_data) }}</pre>
     </div>
 
+    <script>
+        window.onload = (event) =>  {
+            renderStockChart("{{symbol}}");
+            };
+    </script>
 {% endblock %}

@@ -31,3 +31,13 @@ def get_chart_data(symbol):
     price_json = price_hist.json()
 
     return price_json
+
+def get_market_summary():
+    """Gets major index data"""
+    summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
+    summary_query = {"lang":"en", "region":"US"}
+    headers = {'X-API-KEY': STOCKS_KEY}
+    summary = requests.request("GET", summary_url, headers=headers, params=summary_query)
+    summary_json = summary.json()
+
+    return summary_json

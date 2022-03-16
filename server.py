@@ -31,12 +31,11 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 def show_stock_data():
     """Shows stock data"""
 
+    summary_json = yfapi.get_market_summary()
     quote_url = "https://yfapi.net/v6/finance/quote"
     trending_url = "https://yfapi.net/v1/finance/trending/US"
-
     trend_query = {"region":"US"}
     quote_query = {"symbols":".INX,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB"}
-
     headers = {'X-API-KEY': STOCKS_KEY}
 
     trends = requests.request("GET", trending_url, headers=headers, params=trend_query)
@@ -54,11 +53,13 @@ def show_stock_data():
                            pformat=pformat,
                            quote_data=quotes_json,
                            trend_data=trends_json,
+                           summary_json=summary_json,
                            news_data=top_headlines)
 
 @app.route('/market_summary.json')
 def send_market_summary():
     """Sends major index data"""
+
     summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
     summary_query = {"lang":"en", "region":"US"}
     headers = {'X-API-KEY': STOCKS_KEY}
@@ -66,6 +67,7 @@ def send_market_summary():
     summary_json = summary.json()
 
     return summary_json
+
 #=======================================#
 ###############   QUOTES   ##############
 #=======================================#
