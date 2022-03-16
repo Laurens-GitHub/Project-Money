@@ -39,5 +39,4 @@ def get_market_summary():
     headers = {'X-API-KEY': STOCKS_KEY}
     summary = requests.request("GET", summary_url, headers=headers, params=summary_query)
     summary_json = summary.json()
-    print(summary)
     return summary_json

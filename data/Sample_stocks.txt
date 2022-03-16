@@ -35,3 +35,4 @@ LRCX,Lam Research Corp
 AAPL,Apple Inc
 F,Ford Motor Co
 QCOM,Qualcomm Inc
+UBML, Ubermelon Co
