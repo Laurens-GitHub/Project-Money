@@ -19,7 +19,7 @@ os.system('createdb market')
 model.connect_to_db(server.app)
 model.db.create_all()
 
-today = datetime.datetime.now(pytz.timezone('America/New_York'))
+today = datetime.datetime.now()
 
 
 # Load stock data from txt file

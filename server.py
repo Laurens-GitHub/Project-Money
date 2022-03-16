@@ -1,4 +1,4 @@
-"""Server for stock market app."""
+"""Server for Ticker app."""
 
 from flask import Flask, render_template, request, flash, session, redirect
 from pprint import pformat
@@ -6,6 +6,7 @@ import os
 import requests
 from model import connect_to_db, db
 import crud
+import yfapi
 from jinja2 import StrictUndefined
 import http.client, urllib.parse
 from newsapi import NewsApiClient
@@ -21,24 +22,6 @@ NEWS_KEY2 = os.environ['NEWS_KEY2']
 
 #remove in production
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
-
-
-
-# From anlu
-# # Write a yfapi.py module that would make the following code work, and then
-# # use this module in server.py in the appropriate places
-# from yfapi import YFAPIClient
-
-# yf_client = YFAPIClient(STOCKS_KEY)
-
-# # for getting quotes
-# quotes = yf_client.quotes(".INX,.DJI,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB")
-
-# # for getting trends
-# trends = yf_client.trends()  # this can have a default region argument of "US"
-
-# # for getting autocomplete
-# quotes = yf_client.autocomplete("XXX")
 
 #=======================================#
 ##############   HOMEPAGE   #############
@@ -370,15 +353,13 @@ def get_stock_quote():
 @app.route("/price_chart.json")
 def send_chart_data():
     """Sends chart data by ticker"""
-
     symbol = request.args.get("symbol")
-    price_url = f'https://yfapi.net/v8/finance/chart/{symbol}'
-    price_query = {"range": "1d", "interval": "1m"}
-    headers = {'X-API-KEY': STOCKS_KEY}
-    price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
-    price_json = price_hist.json()
+    chart = yfapi.get_chart_data(symbol)
+    return chart
 
-    return price_json
+
+
+
 
 #=======================================#
 ###############   USERS   ###############
