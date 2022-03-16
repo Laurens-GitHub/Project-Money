@@ -32,6 +32,7 @@ def show_stock_data():
     """Shows stock data"""
 
     summary_json = yfapi.get_market_summary()
+
     quote_url = "https://yfapi.net/v6/finance/quote"
     trending_url = "https://yfapi.net/v1/finance/trending/US"
     trend_query = {"region":"US"}
