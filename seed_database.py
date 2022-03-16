@@ -5,8 +5,6 @@ import json
 from copy import deepcopy
 from random import choice
 import datetime
-import pytz
-from pytz import timezone
 
 import crud
 import model

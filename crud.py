@@ -2,11 +2,9 @@
 
 from model import db, User, Stock, UserStock, connect_to_db
 import datetime
-import pytz
-from pytz import timezone
 
-#TODO: configure date into MM/DD/YY format
-today = datetime.datetime.now(pytz.timezone('America/New_York'))
+today = datetime.datetime.now()
+format_today = today.strftime("%m/%d/%y")
 
 #=======================================#
 ###############   USERS   ###############
@@ -79,7 +77,7 @@ def get_stock_by_symbol(symbol):
 ############   USER STOCKS   ############
 #=======================================#
 
-def create_user_stock(user_id, stock_id, date_saved=today):
+def create_user_stock(user_id, stock_id, date_saved=format_today):
     """Create and return a new user stock."""
     user_stock = UserStock(
             user_id=user_id,
