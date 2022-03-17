@@ -18,16 +18,13 @@ import requests
 import os
 
 STOCKS_KEY = os.environ['YAHOO_KEY']
-RAPID_KEY = os.environ['RAPID_KEY']
-NEWS_KEY = os.environ['NEWS_KEY']
-NEWS_KEY2 = os.environ['NEWS_KEY2']
+HEADERS = {'X-API-KEY': STOCKS_KEY}
 
 def get_chart_data(symbol):
     """Gets stock chart data by symbol"""
     price_url = f'https://yfapi.net/v8/finance/chart/{symbol}'
     price_query = {"range": "1d", "interval": "1m"}
-    headers = {'X-API-KEY': STOCKS_KEY}
-    price_hist = requests.request("GET", price_url, headers=headers, params=price_query)
+    price_hist = requests.request("GET", price_url, headers=HEADERS, params=price_query)
     price_json = price_hist.json()
 
     return price_json
@@ -36,7 +33,16 @@ def get_market_summary():
     """Gets major index data"""
     summary_url = "https://yfapi.net/v6/finance/quote/marketSummary"
     summary_query = {"lang":"en", "region":"US"}
-    headers = {'X-API-KEY': STOCKS_KEY}
-    summary = requests.request("GET", summary_url, headers=headers, params=summary_query)
+    summary = requests.request("GET", summary_url, headers=HEADERS, params=summary_query)
     summary_json = summary.json()
+
     return summary_json
+
+def get_trending():
+    """Gets major index data"""
+    trending_url = "https://yfapi.net/v1/finance/trending/US"
+    trend_query = {"region":"US"}
+    trends = requests.request("GET", trending_url, headers=HEADERS, params=trend_query)
+    trends_json = trends.json()
+
+    return trends_json
