@@ -48,12 +48,17 @@
   </form>
 {% endif %}
 
+<h3>Top Stories</h3>
+<div id="articles" class="row">
+
+</div>
+
 <h3>Summary</h3>
 <div id="summary">
 
 </div>
 
-<h3>Trending</h3>
+<h3>Trending Tickers</h3>
 <div id="trending">
 
 </div>
@@ -61,20 +66,13 @@
 <h3>Big Tech</h3>
 <div id="big-tech">
 
-</div>
-
-    <div id="results-as-json">
-        <h2>Results as JSON</h2>
-        <pre>{{ pformat(news_data) }}</pre>
-    </div>
-
 <script src="/static/js/homepage.js"></script>
 <script>
     window.onload = (event) =>  {
-        getSummary();
-        getTrending();
-        getBigTech();
-        getNews
+        // getSummary();
+        // getTrending();
+        // getBigTech();
+        getNews();
     };
 </script>
 {% endblock %}

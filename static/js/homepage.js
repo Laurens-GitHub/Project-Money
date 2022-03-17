@@ -7,8 +7,6 @@ function getSummary() {
       //waits for a response, in json format
       .then((data) => insertSummaryData(data));
       //takes the json that is returned, and passes it into the insertCardData function
-    //    console.log("function has run")
-    //   debugger;
     };
   const insertSummaryData = (response) => {
     // Once the data has been provided by the server,
@@ -29,18 +27,18 @@ function getSummary() {
         market,
         price = indexes[i]['regularMarketPrice']['fmt'],
         change = indexes[i]['regularMarketChange']['fmt'],
-        pct_change =  indexes[i]['regularMarketChangePercent']['fmt']
+        pctChange =  indexes[i]['regularMarketChangePercent']['fmt']
       );
     }
   };
-  const createSummaryAndAddToContainer = (market, price, change, pct_change) => {
+  const createSummaryAndAddToContainer = (market, price, change, pctChange) => {
     const cardElement = document.createElement("div");
     cardElement.classList.add("card");
     cardElement.innerHTML = `
         <p>${market}</p>
         <p>${price}</p>
         <p>${change}</p>
-        <p>${pct_change}</p>
+        <p>${pctChange}</p>
     `;
     document.querySelector("#summary").append(cardElement);
   };
@@ -55,13 +53,13 @@ function getTrending() {
     };
   const insertTrendData = (response) => {
 
-    const trending_stocks = response['finance']['result'][0]['quotes'];
+    const trendingStocks = response['finance']['result'][0]['quotes'];
     const container = document.querySelector("#trending");
     container.innerHTML = "";
 
-    for (let i=0; i<trending_stocks.length; i++) {
+    for (let i=0; i<trendingStocks.length; i++) {
       createTrendAndAddToContainer(
-      trender = trending_stocks[i]['symbol']
+      trender = trendingStocks[i]['symbol']
       );
     }
   };
@@ -85,30 +83,79 @@ function getBigTech() {
     };
   const insertTechData = (response) => {
 
-    const tech_stocks = response['quoteResponse']['result'];
+    const techStocks = response['quoteResponse']['result'];
     const container = document.querySelector("#big-tech");
     container.innerHTML = "";
 
-    for (let i=0; i<tech_stocks.length; i++) {
+    for (let i=0; i<techStocks.length; i++) {
         createStockAndAddToContainer(
-        symbol = tech_stocks[i]['symbol'],
-        price = tech_stocks[i]['regularMarketPrice'],
-        change = tech_stocks[i]['regularMarketChange'],
-        pct_change = tech_stocks[i]['regularMarketChangePercent']
+        symbol = techStocks[i]['symbol'],
+        price = techStocks[i]['regularMarketPrice'],
+        change = techStocks[i]['regularMarketChange'],
+        pct_change = techStocks[i]['regularMarketChangePercent']
         );
     }
     };
-    const createStockAndAddToContainer = (symbol, price, change, pct_change) => {
+    const createStockAndAddToContainer = (symbol, price, change, pctChange) => {
         const cardElement = document.createElement("div");
         cardElement.classList.add("card");
         cardElement.innerHTML = `
             <p>${symbol}</p>
             <p>${price}</p>
             <p>${change}</p>
-            <p>${pct_change}</p>
+            <p>${pctChange}</p>
             `;
     document.querySelector("#big-tech").append(cardElement);
 };
 
 ////////////  MARKET NEWS  \\\\\\\\\\\\\\
 
+function getNews() {
+    fetch("/market_news.json")
+    .then((response) => response.json())
+    .then((data) => insertNewsData(data));
+
+    };
+    const insertNewsData = (response) => {
+
+        const newsData = response['articles'];
+        const container = document.querySelector("#articles");
+        container.innerHTML = "";
+
+        // trim the source name from the end of the title
+        for (let i=0; i<newsData.length; i++) {
+            if (newsData[i]['title'].indexOf(" - ")) {
+                title = newsData[i]['title'].split(' - ')[0]
+            } else {
+                title = newsData[i]['title']
+            }
+            createArticleAndAddToContainer(
+            title,
+            description = newsData[i]['description'],
+            link = newsData[i]['url'],
+            imageUrl = newsData[i]['urlToImage'],
+            source = newsData[i]['source']['name']
+            );
+        }
+    };
+
+    const createArticleAndAddToContainer = (title, description, link, imageUrl, source) => {
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("card");
+        cardElement.innerHTML = `
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 article-summary mt-3">
+                    <div class="card text-center bg-light">
+                    <a href="${link}" target="_blank" rel="noopener noreferrer">
+                        <img class="card-img-top img-circle" src="${imageUrl}">
+                    </a>
+                    <div class="article-body">
+                        <h5 class="article-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h5>
+                        <div class="article-source">${source}</div>
+                        <a class="article-description" href="${link}" target="_blank" rel="noopener noreferrer">${description}</a>
+                    </div>
+                    </div>
+                </div>
+        </div>
+            `;
+    document.querySelector("#articles").append(cardElement);
+};

@@ -60,13 +60,13 @@ def send_tech_stocks():
 
     return tech_json
 
-# @app.route('/market_news.json')
-# def send_market_news():
-#     """Sends data for latest US business news"""
+@app.route('/market_news.json')
+def send_market_news():
+    """Sends data for latest US business news"""
 
-#     news_json = market_news.get_news()
+    news_json = market_news.get_news()
 
-#     return news_json
+    return news_json
 
 #=======================================#
 ###############   QUOTES   ##############
