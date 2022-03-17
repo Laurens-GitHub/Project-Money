@@ -1,15 +1,14 @@
 """Server for Ticker app."""
 
-from flask import Flask, render_template, request, flash, session, redirect
-from pprint import pformat
 import os
+from pprint import pformat
+from flask import Flask, render_template, request, flash, session, redirect
 import requests
 from model import connect_to_db, db
 import crud
 import yfapi
+import market_news
 from jinja2 import StrictUndefined
-import http.client, urllib.parse
-from newsapi import NewsApiClient
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -17,8 +16,6 @@ app.jinja_env.undefined = StrictUndefined
 STOCKS_KEY = os.environ['YAHOO_KEY']
 RAPID_KEY = os.environ['RAPID_KEY']
 NEWS_KEY = os.environ['NEWS_KEY']
-NEWS_KEY2 = os.environ['NEWS_KEY2']
-
 
 #remove in production
 app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
@@ -31,23 +28,13 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 def show_stock_data():
     """Shows stock data"""
 
-    quote_url = "https://yfapi.net/v6/finance/quote"
-    quote_query = {"symbols":".INX,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB"}
-    headers = {'X-API-KEY': STOCKS_KEY}
-    quotes = requests.request("GET", quote_url, headers=headers, params=quote_query)
-    quotes_json = quotes.json()
+    news_json = market_news.get_news()
 
-    newsapi = NewsApiClient(NEWS_KEY)
-    top_headlines = newsapi.get_top_headlines(
-                                          category='business',
-                                          country='us',
-                                          language='en')
 
     return render_template('homepage.html',
-                           pformat=pformat,
-                           quote_data=quotes_json,
-                        #    trend_data=trends_json,
-                           news_data=top_headlines)
+                           pformat=pformat, news_data=news_json)
+                        #    quote_data=quotes_json)
+                        #    )
 
 @app.route('/market_summary.json')
 def send_market_summary():
@@ -64,6 +51,22 @@ def send_trending_stocks():
     trends_json = yfapi.get_trending()
 
     return trends_json
+
+@app.route('/big_tech.json')
+def send_tech_stocks():
+    """Sends data for major tech stocks"""
+
+    tech_json = yfapi.get_big_tech()
+
+    return tech_json
+
+# @app.route('/market_news.json')
+# def send_market_news():
+#     """Sends data for latest US business news"""
+
+#     news_json = market_news.get_news()
+
+#     return news_json
 
 #=======================================#
 ###############   QUOTES   ##############
