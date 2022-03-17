@@ -56,16 +56,17 @@
     <div id="results-as-json">
         <h2>Results as JSON</h2>
 
-        <pre>{{ pformat(summary_json) }}</pre>
         <pre>{{ pformat(news_data) }}</pre>
         <pre>{{ pformat(quote_data) }}</pre>
         <pre>{{ pformat(trend_data) }}</pre>
     </div>
 
-
+<script src="/static/js/homepage.js"></script>
+<script>
+    window.onload = (event) =>  {
+        getSummary();
+        };
+</script>
 {% endblock %}
-    <!-- <script>
-        window.onload = (event) =>  {
-            renderStockChart("{{symbol}}");
-            };
-    </script> -->
+
+         <!-- <pre>{{ pformat(summary_json) }}</pre> -->

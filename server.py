@@ -53,7 +53,7 @@ def show_stock_data():
                            pformat=pformat,
                            quote_data=quotes_json,
                            trend_data=trends_json,
-                           summary_json=summary_json,
+                        #    summary_json=summary_json,
                            news_data=top_headlines)
 
 @app.route('/market_summary.json')
@@ -180,13 +180,13 @@ def get_stock_quote():
             year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
             year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
 #TODO: see if you can fix not getting the price/equity ratio & eps
-            # pe_ratio = format(quote_response['quoteResponse']['result'][0]['trailingPE'], ".2f")
-            # eps = format(quote_response['quoteResponse']['result'][0]['epsTrailingTwelveMonths'], ".2f")
-            volume = rapid_response['price']['regularMarketVolume']['fmt']
-            # market_cap = rapid_response['price']['marketCap']['fmt']
-            # expense_ratio = rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio']['fmt']
-            # turnover = rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover']['fmt']
-            # fund_style = rapid_response['fundProfile']['categoryName']
+            pe_ratio = (quote_response['quoteResponse']['result'][0].get('trailingPE'))
+            eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths')
+            volume = rapid_response['price'].get('regularMarketVolume')
+            market_cap = rapid_response['price'].get('marketCap')
+            expense_ratio = rapid_response['fundProfile']['feesExpensesInvestment'].get('annualReportExpenseRatio')
+            turnover = rapid_response['fundProfile']['feesExpensesInvestment'].get('annualHoldingsTurnover')
+            fund_style = rapid_response['fundProfile'].get('categoryName')
             return render_template("ETF.html",
                                     symbol=symbol,
                                     company=company,
@@ -202,12 +202,12 @@ def get_stock_quote():
                                     year_high=year_high,
                                     year_low=year_low,
                                     volume=volume,
-                                    # pe_ratio=pe_ratio,
-                                    # eps=eps,
-                                    # market_cap=market_cap,
-                                    # expense_ratio=expense_ratio,
-                                    # turnover=turnover,
-                                    # fund_style=fund_style,
+                                    pe_ratio=pe_ratio,
+                                    eps=eps,
+                                    market_cap=market_cap,
+                                    expense_ratio=expense_ratio,
+                                    turnover=turnover,
+                                    fund_style=fund_style,
                                     pformat=pformat,
                                     ETF_json=quote_response, rapid_json=rapid_response)
 

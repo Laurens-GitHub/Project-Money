@@ -89,14 +89,14 @@ def create_user_stock(user_id, stock_id, date_saved=format_today):
 
 def get_user_stocks(user_id):
     """Return a user's saved stocks."""
-
+#TODO: modify this so that deleted stocks are not included.s
     saved_stocks= UserStock.query.filter(UserStock.user_id == user_id).all()
 
     return saved_stocks
 
 def delete_user_stock(user_id, stock_id):
     """Delete a user's saved stocks."""
-
+#TODO: re-write so that the deleted column is set to "true" in the database
     deleted_stock = UserStock.query.filter(user_id=user_id, stock_id=stock_id).first()
 
     return deleted_stock
