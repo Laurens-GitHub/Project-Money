@@ -8,31 +8,59 @@
           rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
           crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
+    <!-- Load CSS  -->
+    <link rel="stylesheet" href=/static/css/site.css>
+
+    <!-- Load Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-32x32.png">
     <link rel="manifest" href="/static/img/site.webmanifest">
-    <link rel="stylesheet" href="/static/css/homepage.css">
 
     <title>
       {% block title %}{% endblock %}
     </title>
 
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="http://localhost:5000/">Ticker</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {%if session.get("user_email")%}
+                <li class="nav-item">
+                    <a class="nav-link active" href="/user_profile">Favorites</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="">Log Off</a>
+                </li>
+                {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="#">Register</a>
+              </li>
+                {% endif %}
+            </ul>
+            <form class="d-flex" action="/quote" method="GET">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+              <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </nav>
     {% block head %}{% endblock %}
   </head>
-  <body>
-      <a href="http://localhost:5000/">Home</a>
+  <body class="container">
     {% for msg in get_flashed_messages() %}
     <p class="flash-msg">
       {{ msg }}
     </p>
   {% endfor %}
-      <div>
-        <form action="/quote" method="GET">
-            Search <input type="text" name="search">
-            <input type="submit">
-        </form>
-      </div>
+
     {%if session.get("user_email")%}
     <div>
     <form action="/user_profile">

@@ -183,13 +183,13 @@ def get_stock_quote():
             day_low = format(quote_response['quoteResponse']['result'][0]['regularMarketDayLow'], ".2f")
             year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
             year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
-#TODO: see if you can fix not getting the price/equity ratio & eps
-            pe_ratio = (quote_response['quoteResponse']['result'][0].get('trailingPE'))
-            eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths')
-            volume = rapid_response['price'].get('regularMarketVolume', '-')
-            market_cap = rapid_response['price'].get('marketCap', '-')
-            expense_ratio = rapid_response['fundProfile']['feesExpensesInvestment'].get('annualReportExpenseRatio', '-')
-            turnover = rapid_response['fundProfile']['feesExpensesInvestment'].get('annualHoldingsTurnover', '-')
+#TODO: format values to 2 decimal places
+            pe_ratio = quote_response['quoteResponse']['result'][0].get('trailingPE', '-')
+            eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths', '-')
+            volume = rapid_response['price']['regularMarketVolume'].get('fmt', '-')
+            market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
+            expense_ratio = rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-')
+            turnover = rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-')
             fund_style = rapid_response['fundProfile'].get('categoryName', '-')
             return render_template("ETF.html",
                                     symbol=symbol,
@@ -478,6 +478,8 @@ def show_user_favorites():
     user = crud.get_user_by_email(logged_in_email)
     faves = crud.get_user_stocks(user.user_id)
 
+#TODO: fix this conditional, the template is showing the wrong thing
+    print(faves)
     if faves is None:
 
         return render_template("/user-profile.html", saved_stocks=None)

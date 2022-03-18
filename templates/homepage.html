@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+
 {% block title %}Ticker{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="/static/css/homepage.css">
+{% endblock %}
+
 {% block body %}
-  <h1>Markets!</h1>
 {%if session.get("user_email")%}
 
   <form action="/logoff" method="POST">
@@ -72,9 +76,7 @@
         // getSummary();
         // getTrending();
         // getBigTech();
-        getNews();
+        // getNews();
     };
 </script>
 {% endblock %}
-
-         <!-- <pre>{{ pformat(summary_json) }}</pre> -->
