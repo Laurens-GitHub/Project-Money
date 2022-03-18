@@ -4,6 +4,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="/static/css/homepage.css">
+<link rel="stylesheet" href="/static/css/marquee.css">
 {% endblock %}
 
 {% block body %}
@@ -52,15 +53,19 @@
   </form>
 {% endif %}
 
+<h3>Summary</h3>
+    <div class="promo-carousel" id="summary">
+        <div class="item-wrap" id="summary-wrap">
+        </div>
+    </div>
+
+
 <h3>Top Stories</h3>
 <div id="articles" class="row">
 
 </div>
 
-<h3>Summary</h3>
-<div id="summary">
 
-</div>
 
 <h3>Trending Tickers</h3>
 <div id="trending">
@@ -73,7 +78,7 @@
 <script src="/static/js/homepage.js"></script>
 <script>
     window.onload = (event) =>  {
-        // getSummary();
+        getSummary();
         // getTrending();
         // getBigTech();
         // getNews();

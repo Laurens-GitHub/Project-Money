@@ -1,4 +1,4 @@
-body.container {
-    background: url(beanstalk.png) no-repeat center center;
+div.container {
+    background: url(/static/img/beanstalk.png) no-repeat center center;
     background-size: cover;
   }

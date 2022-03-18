@@ -12,8 +12,7 @@ function getSummary() {
     // Once the data has been provided by the server,
     // insert it into the page as an HTML string.
     const indexes = response['marketSummaryResponse']['result'];
-    console.log("attempting insert")
-    const container = document.querySelector("#summary");
+    const container = document.querySelector("#summary-wrap");
     // empty the container so it has no content
     container.innerHTML = "";
 
@@ -30,17 +29,21 @@ function getSummary() {
         pctChange =  indexes[i]['regularMarketChangePercent']['fmt']
       );
     }
+    $('#summary').grouploop();
   };
   const createSummaryAndAddToContainer = (market, price, change, pctChange) => {
+    colorPrice = "green"
+    if (price < 0){
+        colorPrice = "red"
+    }
     const cardElement = document.createElement("div");
-    cardElement.classList.add("card");
+    cardElement.classList.add("item");
     cardElement.innerHTML = `
-        <p>${market}</p>
-        <p>${price}</p>
-        <p>${change}</p>
-        <p>${pctChange}</p>
+            ${market} ${price} ${change} ${pctChange}
+
     `;
-    document.querySelector("#summary").append(cardElement);
+    document.querySelector("#summary-wrap").append(cardElement);
+
   };
 
 ////////////  TRENDING  \\\\\\\\\\\\\\
