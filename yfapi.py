@@ -50,7 +50,7 @@ def get_trending():
 def get_big_tech():
     """Gets major tech stocks"""
     quote_url = "https://yfapi.net/v6/finance/quote"
-    tech_query = {"symbols":"AAPL,MSFT,GOOGL,AMZN,NVDA,FB"}
+    tech_query = {"symbols":"^NDX,AAPL,MSFT,GOOGL,AMZN,NVDA,FB"}
     headers = {'X-API-KEY': STOCKS_KEY}
     quotes = requests.request("GET", quote_url, headers=headers, params=tech_query)
     tech_json = quotes.json()
