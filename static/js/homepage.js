@@ -29,18 +29,20 @@ function getSummary() {
         pctChange =  indexes[i]['regularMarketChangePercent']['fmt']
       );
     }
-    $('#summary').grouploop();
+    $('#summary').grouploop({forward:false, velocity: 2});
   };
   const createSummaryAndAddToContainer = (market, price, change, pctChange) => {
-    colorPrice = "green"
-    if (price < 0){
-        colorPrice = "red"
+    if (change > 0) {
+        priceDirection = "+"
+        colorState = "green"
+    } else {
+        colorState = "red"
+        priceDirection= ""
     }
     const cardElement = document.createElement("div");
     cardElement.classList.add("item");
     cardElement.innerHTML = `
-            ${market} ${price} ${change} ${pctChange}
-
+            <span class="container-fluid justify-content-start"><b>${market}</b> ${price} <span class=${colorState}>${priceDirection}${change}</span><span> </span><span class=${colorState}>${priceDirection}${pctChange}</span>
     `;
     document.querySelector("#summary-wrap").append(cardElement);
 
@@ -68,7 +70,7 @@ function getTrending() {
   };
     const createTrendAndAddToContainer = (trender) => {
         const cardElement = document.createElement("div");
-        cardElement.classList.add("card");
+        cardElement.classList.add("trend");
         cardElement.innerHTML = `
             <p>${trender}</p>
 
@@ -101,7 +103,7 @@ function getBigTech() {
     };
     const createStockAndAddToContainer = (symbol, price, change, pctChange) => {
         const cardElement = document.createElement("div");
-        cardElement.classList.add("card");
+        cardElement.classList.add("tech-stock");
         cardElement.innerHTML = `
             <p>${symbol}</p>
             <p>${price}</p>
@@ -144,21 +146,21 @@ function getNews() {
 
     const createArticleAndAddToContainer = (title, description, link, imageUrl, source) => {
         const cardElement = document.createElement("div");
-        cardElement.classList.add("card");
+        cardElement.classList.add("news-card");
         cardElement.innerHTML = `
-                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 article-summary mt-3">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 mt-3">
                     <div class="card text-center bg-light">
-                    <a href="${link}" target="_blank" rel="noopener noreferrer">
-                        <img class="card-img-top img-circle" src="${imageUrl}">
-                    </a>
-                    <div class="article-body">
-                        <h5 class="article-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h5>
-                        <div class="article-source">${source}</div>
-                        <a class="article-description" href="${link}" target="_blank" rel="noopener noreferrer">${description}</a>
-                    </div>
+                        <a href="${link}" target="_blank" rel="noopener noreferrer">
+                            <img class="card-img-top img-circle" src="${imageUrl}">
+                        </a>
+                        <div class="article-body">
+                            <h5 class="article-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h5>
+                                <div class="article-source">${source}</div>
+                                    <a class="article-description" href="${link}" target="_blank" rel="noopener noreferrer">${description}</a>
+                                </div>
+                        </div>
                     </div>
                 </div>
-        </div>
             `;
     document.querySelector("#articles").append(cardElement);
 };
