@@ -29,7 +29,7 @@ function getSummary() {
         pctChange =  indexes[i]['regularMarketChangePercent']['fmt']
       );
     }
-    $('#summary').grouploop({forward:false, velocity: 2});
+    $('#summary').grouploop({forward:false});
   };
   const createSummaryAndAddToContainer = (market, price, change, pctChange) => {
     if (change > 0) {
@@ -148,16 +148,16 @@ function getNews() {
         const cardElement = document.createElement("div");
         cardElement.classList.add("news-card");
         cardElement.innerHTML = `
-                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 mt-3">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 news-summary mt-3">
                     <div class="card text-center bg-light">
+                        <h5 class="article-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h5>
                         <a href="${link}" target="_blank" rel="noopener noreferrer">
                             <img class="card-img-top img-circle" src="${imageUrl}">
                         </a>
                         <div class="article-body">
-                            <h5 class="article-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h5>
-                                <div class="article-source">${source}</div>
-                                    <a class="article-description" href="${link}" target="_blank" rel="noopener noreferrer">${description}</a>
-                                </div>
+                            <div class="article-source">${source}</div>
+                                <a class="article-description" href="${link}" target="_blank" rel="noopener noreferrer">${description}</a>
+                            </div>
                         </div>
                     </div>
                 </div>

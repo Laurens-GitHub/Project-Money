@@ -1,5 +1,12 @@
 /* news articles */
 
-div.article-summary img {
+div.news-summary img {
     width: 15em;
+  }
+
+  div.news-summary .source {
+    margin: 0.5em 0;
+    color:black;
+    font-size: 150%;
+    font-weight: bold;
   }

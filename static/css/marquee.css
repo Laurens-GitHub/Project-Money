@@ -6,11 +6,12 @@
   }
 
   .promo-carousel .item-wrap {
-    transform: translateX(0px);
-    width: 10%;
+    animation: bannermove 40s linear infinite;
+    width: 400%;
     position: relative;
     white-space: nowrap;
     display: flex;
+    justify-content: space-between
   }
 
   .item {
@@ -35,8 +36,17 @@
     background: rgb(255, 0, 0, .5);
   }
 
-  @media (min-width: 2000px) {
+  @keyframes bannermove {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* @media (min-width: 2000px) {
 
   .promo-carousel .item-wrap { width: 1000%; }
 
-  }
+  } */
