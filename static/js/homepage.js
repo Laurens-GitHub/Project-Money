@@ -89,29 +89,44 @@ function getBigTech() {
   const insertTechData = (response) => {
 
     const techStocks = response['quoteResponse']['result'];
-    const container = document.querySelector("#big-tech");
-    container.innerHTML = "";
 
     for (let i=0; i<techStocks.length; i++) {
         createStockAndAddToContainer(
         symbol = techStocks[i]['symbol'],
-        price = techStocks[i]['regularMarketPrice'],
-        change = techStocks[i]['regularMarketChange'],
-        pct_change = techStocks[i]['regularMarketChangePercent']
+        company = techStocks[i]['shortName'],
+        price = (Math.round(techStocks[i]['regularMarketPrice'] * 100) / 100).toFixed(2),
+        change = (Math.round(techStocks[i]['regularMarketChange'] * 100) / 100).toFixed(2)
+        // pct_change = techStocks[i]['regularMarketChangePercent']
         );
     }
     };
-    const createStockAndAddToContainer = (symbol, price, change, pctChange) => {
+    const createStockAndAddToContainer = (symbol, company, price, change) => {
+        if (change > 0) {
+            priceDirection = "+"
+            colorState = "green"
+        } else {
+            colorState = "red"
+            priceDirection= ""
+        }
         const cardElement = document.createElement("div");
-        cardElement.classList.add("tech-stock");
+        cardElement.classList.add("tech-card");
         cardElement.innerHTML = `
-            <p>${symbol}</p>
-            <p>${price}</p>
-            <p>${change}</p>
-            <p>${pctChange}</p>
+        <div class="tech-card hstack">
+            <div>
+                <strong>${symbol}</strong>
+            </div>
+            <span class="ms-auto">${price}</span>
+        </div>
+
+        <div class="tech-card hstack">
+            <div class="card-subtitle mb-2 text-muted">${company}</div>
+            <span class="ms-auto ${colorState}">${priceDirection}${change}</span>
+        </div>
+
             `;
     document.querySelector("#big-tech").append(cardElement);
 };
+
 
 ////////////  MARKET NEWS  \\\\\\\\\\\\\\
 
@@ -124,11 +139,17 @@ function getNews() {
     const insertNewsData = (response) => {
 
         const newsData = response['articles'];
-        const container = document.querySelector("#articles");
-        container.innerHTML = "";
+        // const container = document.querySelector("#articles");
+        // container.innerHTML = "";
+        debugger;
+// need to solve: get articles onto a grid
+// newsData is an array of objects
+// while newsData is not empty, create a new div
+// inject 3 news cards onto that div, and remove them from the beginning of the array
+// continue this until newsData is an empty array
 
         // trim the source name from the end of the title
-        for (let i=0; i<newsData.length; i++) {
+        for (let i=0; i<3; i++) {
             if (newsData[i]['title'].indexOf(" - ")) {
                 title = newsData[i]['title'].split(' - ')[0]
             } else {
@@ -146,20 +167,19 @@ function getNews() {
 
     const createArticleAndAddToContainer = (title, description, link, imageUrl, source) => {
         const cardElement = document.createElement("div");
+        cardElement.classList.add("col-md-4");
         cardElement.classList.add("news-card");
         cardElement.innerHTML = `
-                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 news-summary mt-3">
-                    <div class="card text-center bg-light">
-                        <h5 class="article-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h5>
-                        <a href="${link}" target="_blank" rel="noopener noreferrer">
+                <div class="card" style="width: 25rem;">
+                    <a href="${link}" target="_blank" rel="noopener noreferrer">
+                        <h5 class="card-title">${title}</h5>
                             <img class="card-img-top img-circle" src="${imageUrl}">
-                        </a>
-                        <div class="article-body">
+                        <div class="card-body">
                             <div class="article-source">${source}</div>
-                                <a class="article-description" href="${link}" target="_blank" rel="noopener noreferrer">${description}</a>
+                                <p class="card-text">${description}</p>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             `;
     document.querySelector("#articles").append(cardElement);

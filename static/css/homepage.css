@@ -1,12 +1,15 @@
 /* news articles */
 
-div.news-summary img {
-    width: 15em;
-  }
+    .card {
+        height: 480px;
+    }
 
-  div.news-summary .source {
-    margin: 0.5em 0;
-    color:black;
-    font-size: 150%;
-    font-weight: bold;
-  }
+    .news-card a{
+        color:black;
+        text-decoration: none;
+    }
+
+    .article-source {
+        font-weight: bold;
+    }
+
