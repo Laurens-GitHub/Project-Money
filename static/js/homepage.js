@@ -71,10 +71,9 @@ function getTrending() {
     const createTrendAndAddToContainer = (trender) => {
         const cardElement = document.createElement("li");
         cardElement.classList.add("trend");
-        cardElement.innerHTML = `
-            ${trender}
+        cardElement.innerHTML = `${generateStockLink(trender)}`;
 
-            `;
+    debugger;
     document.querySelector("#trending").append(cardElement);
 };
 
@@ -110,6 +109,7 @@ function getBigTech() {
             colorState = "red"
             priceDirection= ""
         }
+
         const cardElement = document.createElement("div");
         cardElement.classList.add("tech-card");
         cardElement.innerHTML = `
@@ -183,3 +183,4 @@ function getNews() {
             `;
     document.querySelector("#articles").append(cardElement);
 };
+
