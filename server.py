@@ -9,6 +9,8 @@ import crud
 import yfapi
 import market_news
 from jinja2 import StrictUndefined
+import datetime
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -23,6 +25,13 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 #=======================================#
 ##############   HOMEPAGE   #############
 #=======================================#
+def two_decimal_formatter(num):
+    """Formats numbers to 2 decimal places"""
+    if isinstance(num, (int, float)):
+        result = format(num, ".2f")
+        return result
+    else:
+        return num
 
 @app.route('/')
 def show_stock_data():
@@ -76,6 +85,9 @@ def get_stock_quote():
     headers = {'X-API-KEY': STOCKS_KEY}
     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
     quote_response = quote.json()
+    dt = datetime.now()
+    curr_date = dt.strftime("%d/%m/%Y")
+    curr_time = dt.strftime("%H:%M:%S")
 
 # known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
 
@@ -140,8 +152,11 @@ def get_stock_quote():
             year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
             volume = rapid_response['price']['regularMarketVolume']['fmt']
             pe_ratio = quote_response['quoteResponse']['result'][0].get('trailingPE', '-')
+            pe_ratio = two_decimal_formatter(pe_ratio)
             eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths', '-')
+            eps = two_decimal_formatter(eps)
             market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
+            market_cap = two_decimal_formatter(market_cap)
             return render_template("stock.html",
                                     symbol=symbol,
                                     company=company,
@@ -160,6 +175,8 @@ def get_stock_quote():
                                     pe_ratio=pe_ratio,
                                     eps=eps,
                                     market_cap=market_cap,
+                                    curr_date=curr_date,
+                                    curr_time=curr_time,
                                     pformat=pformat,
                                     stock_json=quote_response)
 
@@ -337,6 +354,31 @@ def get_stock_quote():
                                     circulating=circulating,
                                     pformat=pformat,
                                     crypto_json=rapid_response)
+
+        elif quote_type == "FUTURE":
+                    rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
+                    rapid_response = rapid_quote.json()
+                    symbol = rapid_response['price']['symbol']
+                    company = rapid_response['price']['shortName']
+                    curr_price = rapid_response['price']['regularMarketPrice']['fmt']
+                    dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
+                    pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
+                    day_high = rapid_response['price']['regularMarketDayHigh']['fmt'] #24hour figure
+                    day_low = rapid_response['price']['regularMarketDayLow']['fmt']  #24hour figure
+                    year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
+                    year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
+                    return render_template("future.html",
+                                            symbol=symbol,
+                                            company=company,
+                                            curr_price=curr_price,
+                                            dollar_chg=dollar_chg,
+                                            pct_chg=pct_chg,
+                                            day_high=day_high,
+                                            day_low=day_low,
+                                            year_high=year_high,
+                                            year_low=year_low,
+                                            pformat=pformat,
+                                            future_json=rapid_response)
 
         # else:
         #     # quote_response == {'message': 'Limit Exceeded'}:

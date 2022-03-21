@@ -22,7 +22,7 @@ HEADERS = {'X-API-KEY': STOCKS_KEY}
 
 def get_stock_data(symbol):
     """Gets quote data by symbol"""
-    quote_url = f'https://yfapi.net/v6/finance/quote/{symbol}'
+    quote_url = 'https://yfapi.net/v6/finance/quote/'
     quote_query = {"symbols": symbol}
     quote = requests.request("GET", quote_url, headers=HEADERS, params=quote_query)
     quote_json = quote.json()

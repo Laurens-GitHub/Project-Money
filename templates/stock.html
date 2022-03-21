@@ -1,53 +1,100 @@
 {% extends 'base.html' %}
 
 {% block title %}Stock Quote{% endblock %}
-
 {% block body %}
 
-{%if session.get("user_email")%}
-<div id="favorite">
-    <form action="/favorites" method="POST">
-        <input type="submit" name="favorite" value="favorite">
-        <input type="hidden" name="symbol" value="{{ symbol }}">
-        <input type="hidden" name="company" value="{{ company }}">
-    </form>
+<div class="container" id="quote_container" ui-view="">
+    <div class="row" id="header-quote">
+        <div class="col">
+            <h3>{{ company }} ({{ symbol }})</h3>
+            {%if session.get("user_email")%}
+            <span>
+                <form action="/favorites" method="POST" id="favorite">
+                    <input type="hidden" name="symbol" value="{{ symbol }}">
+                    <input type="hidden" name="company" value="{{ company }}">
+                    <button type="submit" id="favorite-button">
+                        <i class="bi bi-star"></i>
+                    </button>
+                </form>
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row" id="quote-body">
+        <div class="col">
+            <div><h5>{{ curr_price }}</h5></div>
+            {% set percent_change= pct_chg|int%}
+                {%if percent_change > 0 %}
+                <span class="green">{{ dollar_chg }} ({{pct_chg}}%)</span>
+                {% else %}
+                <span class="red">{{ dollar_chg }} ({{pct_chg}}%)</span>
+                {% endif %}
+            <!--div for price change arrow here  -->
+        </div>
+        <div class="col stock-attribute">
+            Day Range
+            <div class="attribute-value">{{ day_low }} - {{ day_high }}</div>
+        </div>
+        <div class="col stock-attribute">
+            Previous Close
+            <div>{{ prev_close }}</div>
+        </div>
+        <div class="col stock-attribute">
+            Ask
+            <div>{{ ask_price }}</div>
+        </div>
+
+        <div class="col stock-attribute">
+            Volume
+            <div>{{ volume }}</div>
+        </div>
+        <div class="col stock-attribute">
+            P/E (TTM)
+            <div>{{ pe_ratio }}</div>
+        </div>
+    </div>
+    <div class="row" id="quote-body">
+        <div class="col timestamp">
+            AS OF {{curr_time}} {{curr_date}}
+        </div>
+        <div class="col stock-attribute">
+            52-Week Range
+            <div>{{ year_low }} - {{ year_high }}</div>
+        </div>
+        <div class="col stock-attribute">
+            Open
+            <div>{{ open_price }}</div>
+        </div>
+        <div class="col stock-attribute">
+            Bid
+            <div>{{ bid_price }}</div>
+        </div>
+        <div class="col stock-attribute">
+            Market Cap
+            <div>{{ market_cap }}</div>
+        </div>
+        <div class="col stock-attribute">
+            Earnings Per Share
+            <div>{{ eps }}</div>
+        </div>
+    </div>
 </div>
-{% endif %}
 
-<div>
-    <p>{{ company }} </p> <p id="symbol"> {{ symbol }}</p>
-    <p>{{ curr_price }}</p>
-    <p>{{ dollar_chg }}</p>
-    <p>{{ pct_chg }}%</p>
-    <p>{{ open_price }}</p>
-    <p>{{ prev_close }}</p>
-    <p>{{ ask_price }}</p>
-    <p>{{ bid_price }}</p>
-    <p>{{ day_high }}</p>
-    <p>{{ day_low }}</p>
-    <p>{{ year_high }}</p>
-    <p>{{ year_low }}</p>
-    <p>{{ volume }}</p>
-    <p>{{ pe_ratio }}</p>
-    <p>{{ eps }}</p>
-    <p>{{ market_cap }}</p>
+<pre>{{ pformat(stock_json) }}</pre>
 
-    <div>
+
+<div class="container">
     <h2>Price History</h2>
     <canvas id="line-time"></canvas>
   </div>
-    <pre>{{ pformat(stock_json) }}</pre>
 
 </div>
 
 <script src="/static/js/stock.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.1.0/dist/chartjs-adapter-luxon.min.js"></script>
 
-<script>
+<!-- <script>
 window.onload = (event) =>  {
     renderStockChart("{{symbol}}");
   };
-</script>
+</script> -->
 {% endblock %}

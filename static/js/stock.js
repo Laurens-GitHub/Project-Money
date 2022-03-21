@@ -1,5 +1,11 @@
 "use strict";
 
+document.querySelector("#favorite-button").addEventListener("click", function(event) {
+    document.getElementById("favorite-button").innerHTML = `<i class="bi bi-star-fill"></i>`;
+    event.preventDefault();
+    alert(`You've saved this to your favorites`);
+}, false);
+
 function generateStockLink(symbol) {
     return `<a href="http://localhost:5000/quote?search=${symbol}" target="_blank" rel="noopener noreferrer">${symbol}</a>`
 }
