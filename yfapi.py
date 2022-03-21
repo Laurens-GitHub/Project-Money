@@ -20,6 +20,15 @@ import os
 STOCKS_KEY = os.environ['YAHOO_KEY']
 HEADERS = {'X-API-KEY': STOCKS_KEY}
 
+def get_stock_data(symbol):
+    """Gets quote data by symbol"""
+    quote_url = f'https://yfapi.net/v6/finance/quote/{symbol}'
+    quote_query = {"symbols": symbol}
+    quote = requests.request("GET", quote_url, headers=HEADERS, params=quote_query)
+    quote_json = quote.json()
+
+    return quote_json
+
 def get_chart_data(symbol):
     """Gets stock chart data by symbol"""
     price_url = f'https://yfapi.net/v8/finance/chart/{symbol}'

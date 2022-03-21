@@ -19,7 +19,7 @@ fetch('/price_chart.json'+'?symbol='+symbol)
       close: responseJson['chart']['result'][0]['meta']['previousClose']
     };
     console.log(data)
-debugger;
+
     new Chart(document.querySelector('#line-time'), {
       type: 'line',
       data: {

@@ -34,9 +34,9 @@ function getSummary() {
   const createSummaryAndAddToContainer = (market, price, change, pctChange) => {
     if (change > 0) {
         priceDirection = "+"
-        colorState = "green"
+        colorState = "marqueeGreen"
     } else {
-        colorState = "red"
+        colorState = "marqueeRed"
         priceDirection= ""
     }
     const cardElement = document.createElement("div");
@@ -62,17 +62,17 @@ function getTrending() {
     const container = document.querySelector("#trending");
     container.innerHTML = "";
 
-    for (let i=0; i<trendingStocks.length; i++) {
+    for (let i=0; i<10; i++) {
       createTrendAndAddToContainer(
       trender = trendingStocks[i]['symbol']
       );
     }
   };
     const createTrendAndAddToContainer = (trender) => {
-        const cardElement = document.createElement("div");
+        const cardElement = document.createElement("li");
         cardElement.classList.add("trend");
         cardElement.innerHTML = `
-            <p>${trender}</p>
+            ${trender}
 
             `;
     document.querySelector("#trending").append(cardElement);
@@ -89,6 +89,8 @@ function getBigTech() {
   const insertTechData = (response) => {
 
     const techStocks = response['quoteResponse']['result'];
+    const container = document.querySelector("#big-tech");
+    container.innerHTML = "";
 
     for (let i=0; i<techStocks.length; i++) {
         createStockAndAddToContainer(
@@ -111,14 +113,14 @@ function getBigTech() {
         const cardElement = document.createElement("div");
         cardElement.classList.add("tech-card");
         cardElement.innerHTML = `
-        <div class="tech-card hstack">
+        <div class="hstack">
             <div>
                 <strong>${symbol}</strong>
             </div>
             <span class="ms-auto">${price}</span>
         </div>
 
-        <div class="tech-card hstack">
+        <div class="hstack">
             <div class="card-subtitle mb-2 text-muted">${company}</div>
             <span class="ms-auto ${colorState}">${priceDirection}${change}</span>
         </div>
@@ -139,17 +141,11 @@ function getNews() {
     const insertNewsData = (response) => {
 
         const newsData = response['articles'];
-        // const container = document.querySelector("#articles");
-        // container.innerHTML = "";
-        debugger;
-// need to solve: get articles onto a grid
-// newsData is an array of objects
-// while newsData is not empty, create a new div
-// inject 3 news cards onto that div, and remove them from the beginning of the array
-// continue this until newsData is an empty array
+        const container = document.querySelector("#articles");
+        container.innerHTML = "";
 
         // trim the source name from the end of the title
-        for (let i=0; i<3; i++) {
+        for (let i=0; i<newsData.length; i++) {
             if (newsData[i]['title'].indexOf(" - ")) {
                 title = newsData[i]['title'].split(' - ')[0]
             } else {
@@ -170,6 +166,7 @@ function getNews() {
         cardElement.classList.add("col-md-4");
         cardElement.classList.add("news-card");
         cardElement.innerHTML = `
+        <div class="col">
                 <div class="card" style="width: 25rem;">
                     <a href="${link}" target="_blank" rel="noopener noreferrer">
                         <h5 class="card-title">${title}</h5>
@@ -181,6 +178,8 @@ function getNews() {
                         </div>
                     </a>
                 </div>
+            </div>
+
             `;
     document.querySelector("#articles").append(cardElement);
 };

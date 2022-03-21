@@ -25,12 +25,12 @@
 
   }
 
-  .green{
+  .marqueeGreen{
     border-radius: 5px;
     background: rgb(39, 252, 39, .5);
   }
 
-  .red{
+  .marqueeRed{
     border-radius: 5px;
     background: rgb(255, 0, 0, .5);
   }

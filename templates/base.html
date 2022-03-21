@@ -30,129 +30,126 @@
     </head>
 
     <body class="container">
-        <div>
-
-            <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: #7570b6;">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="http://localhost:5000/">Ticker</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <form class="d-flex" action="/quote" method="GET">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
-                                <button class="btn btn-outline-success" type="submit">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                        </form>
-                    </ul>
-
-                    {%if session.get("user_email")%}
-
-                    <span class="nav-item">
-                        <a href="http://localhost:5000/user_profile">
-                            <button class="btn btn-outline-success" name="profile">Favorites</button>
-                        </a>
-                    </span>
-
-                    <span class="nav-item">
-                        <form class="container-fluid justify-content-start" action="/logoff" method="POST">
-                            <button type="submit" class="btn btn-primary">Log Off</button>
-                        </form>
-                    </span>
-                    {% else %}
-                <!-- Button trigger modal (Log In)-->
-                    <span class="nav-item">
-                        <form class="container-fluid justify-content-start">
-                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#LoginModal">
-                                Log In
+        <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: #7570b6;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="http://localhost:5000/">Ticker</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <form class="d-flex" action="/quote" method="GET">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+                            <button class="btn btn-outline-success" type="submit">
+                                <i class="bi bi-search"></i>
                             </button>
-                        </form>
-                    </span>
-                <!-- Button trigger modal (Sign Up)-->
-                    <span class="nav-item">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#SignUpModal">
-                            Sign Up
+                    </form>
+                </ul>
+
+                {%if session.get("user_email")%}
+
+                <span class="nav-item">
+                    <a href="http://localhost:5000/user_profile">
+                        <button class="btn btn-outline-success" name="profile">Favorites</button>
+                    </a>
+                </span>
+
+                <span class="nav-item">
+                    <form class="container-fluid justify-content-start" action="/logoff" method="POST">
+                        <button type="submit" class="btn btn-primary">Log Off</button>
+                    </form>
+                </span>
+                {% else %}
+            <!-- Button trigger modal (Log In)-->
+                <span class="nav-item">
+                    <form class="container-fluid justify-content-start">
+                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#LoginModal">
+                            Log In
                         </button>
-                    </span>
+                    </form>
+                </span>
+            <!-- Button trigger modal (Sign Up)-->
+                <span class="nav-item">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#SignUpModal">
+                        Sign Up
+                    </button>
+                </span>
 
-                    {% endif %}
-                    </div>
-                </div>
-            </nav>
-
-
-
-            <!-- Sign Up Modal -->
-            <div class="modal fade" id="SignUpModal" tabindex="-1" aria-labelledby="SignUpModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="SignUp" id="create_account">Create an Account</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="/users" method="POST">
-                            <div class="mb-3">
-                                <label for="first_name" class="col-form-label">First Name:</label>
-                                <input type="text" class="form-control" name="first_name">
-
-                                <label for="last_name" class="col-form-label">Last Name:</label>
-                                <input type="text" class="form-control" name="last_name">
-
-                                <label for="email" class="col-form-label">Email:</label>
-                                <input type="text" class="form-control" name="email">
-
-                                <label for="password" class="col-form-label">Password:</label>
-                                <input type="password" class="form-control" name="password">
-                            </div>
-
-                    </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Sign Up</button>
-                        </form>
-                        </div>
-                    </div>
+                {% endif %}
                 </div>
             </div>
+        </nav>
 
-            <!-- Log In Modal -->
-            <div class="modal fade" id="LoginModal" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="Login" id="create_account">Log In</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="/login" method="POST">
-                            <div class="mb-3">
-                                <label for="login-email" class="col-form-label">Email:</label>
-                                <input type="text" class="form-control" name="login-email">
 
-                                <label for="login-pass" class="col-form-label">Password:</label>
-                                <input type="password" class="form-control" name="login-pass">
-                            </div>
-                    </div>
+
+        <!-- Sign Up Modal -->
+        <div class="modal fade" id="SignUpModal" tabindex="-1" aria-labelledby="SignUpModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="SignUp" id="create_account">Create an Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/users" method="POST">
+                        <div class="mb-3">
+                            <label for="first_name" class="col-form-label">First Name:</label>
+                            <input type="text" class="form-control" name="first_name">
+
+                            <label for="last_name" class="col-form-label">Last Name:</label>
+                            <input type="text" class="form-control" name="last_name">
+
+                            <label for="email" class="col-form-label">Email:</label>
+                            <input type="text" class="form-control" name="email">
+
+                            <label for="password" class="col-form-label">Password:</label>
+                            <input type="password" class="form-control" name="password">
+                        </div>
+
+                </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Log In</button>
-                        </form>
-                    </div>
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            {% for msg in get_flashed_messages() %}
-            <p class="flash-msg">
-                {{ msg }}
-            </p>
-            {% endfor %}
+        <!-- Log In Modal -->
+        <div class="modal fade" id="LoginModal" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="Login" id="create_account">Log In</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/login" method="POST">
+                        <div class="mb-3">
+                            <label for="login-email" class="col-form-label">Email:</label>
+                            <input type="text" class="form-control" name="login-email">
 
-    {% block body %}{% endblock %}
-    </div>
+                            <label for="login-pass" class="col-form-label">Password:</label>
+                            <input type="password" class="form-control" name="login-pass">
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Log In</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        {% for msg in get_flashed_messages() %}
+        <p class="flash-msg">
+            {{ msg }}
+        </p>
+        {% endfor %}
+
+{% block body %}{% endblock %}
     </body>
 
     {% block after_body %}{% endblock %}

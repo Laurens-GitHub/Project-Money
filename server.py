@@ -26,15 +26,9 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 
 @app.route('/')
 def show_stock_data():
-    """Shows stock data"""
+    """Shows the homepage"""
 
-    news_json = market_news.get_news()
-
-
-    return render_template('homepage.html',
-                           pformat=pformat, news_data=news_json)
-                        #    quote_data=quotes_json)
-                        #    )
+    return render_template('homepage.html')
 
 @app.route('/market_summary.json')
 def send_market_summary():
@@ -83,7 +77,7 @@ def get_stock_quote():
     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
     quote_response = quote.json()
 
-# known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
+# known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
 
     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
         quote_url = "https://yfapi.net/v6/finance/autocomplete"
@@ -358,7 +352,12 @@ def send_chart_data():
     chart = yfapi.get_chart_data(symbol)
     return chart
 
-
+@app.route("/stock_data.json")
+def send_stock_data():
+    """Sends stock data by ticker"""
+    symbol = request.args.get("symbol")
+    quote = yfapi.get_stock_data(symbol)
+    return quote
 
 
 

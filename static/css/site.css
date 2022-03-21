@@ -1,15 +1,22 @@
-body.container {
-    background: linear-gradient(rgb(248, 250, 253) 0%, rgba(248, 250, 253, 0) 413px)
-  }
+    body {
+        padding-top: 65px;
+    }
 
-.tech-card {
-    margin-bottom: 3px;
-}
+    body.container {
+        background: linear-gradient(rgb(248, 250, 253) 0%, rgba(248, 250, 253, 0) 413px)
+    }
 
-.tech-card.green {
-    color: rgb(39, 252, 39, .5);
-}
 
-.tech-card.red {
-    color: rgb(255, 0, 0, .5);
-}
+    /* .tech-card {
+        margin-bottom: 3px;
+    } */
+
+    .green {
+        font-weight: 500;
+        color: green;
+    }
+
+    .red {
+        font-weight: 500;
+        color: rgb(220, 53, 69);
+    }
