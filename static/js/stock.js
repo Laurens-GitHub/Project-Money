@@ -1,7 +1,7 @@
 "use strict";
 
 function generateStockLink(symbol) {
-    return `<a href="http://localhost:5000/quote?search=${symbol}">${symbol}</a>`
+    return `<a href="http://localhost:5000/quote?search=${symbol}" target="_blank" rel="noopener noreferrer">${symbol}</a>`
 }
 
 function renderStockChart(symbol) {

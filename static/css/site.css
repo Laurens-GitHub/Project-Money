@@ -6,10 +6,10 @@
         background: linear-gradient(rgb(248, 250, 253) 0%, rgba(248, 250, 253, 0) 413px)
     }
 
-
-    /* .tech-card {
-        margin-bottom: 3px;
-    } */
+    a {
+        color:black;
+        text-decoration: none;
+    }
 
     .green {
         font-weight: 500;

@@ -73,7 +73,6 @@ function getTrending() {
         cardElement.classList.add("trend");
         cardElement.innerHTML = `${generateStockLink(trender)}`;
 
-    debugger;
     document.querySelector("#trending").append(cardElement);
 };
 
@@ -93,7 +92,7 @@ function getBigTech() {
 
     for (let i=0; i<techStocks.length; i++) {
         createStockAndAddToContainer(
-        symbol = techStocks[i]['symbol'],
+        symbol = generateStockLink(techStocks[i]['symbol']),
         company = techStocks[i]['shortName'],
         price = (Math.round(techStocks[i]['regularMarketPrice'] * 100) / 100).toFixed(2),
         change = (Math.round(techStocks[i]['regularMarketChange'] * 100) / 100).toFixed(2)
