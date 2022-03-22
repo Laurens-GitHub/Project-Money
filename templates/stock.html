@@ -23,10 +23,9 @@
     <div class="row" id="quote-body">
         <div class="col">
             <div><h2 class="stock-price-header">{{ curr_price }}</h2></div>
-            {% set percent_change= pct_chg|int%}
-                {%if percent_change > 0 %}
+                {% if dollar_chg|int >= 0 %}
                 <span class="green"><h3>{{ dollar_chg }} ({{pct_chg}}%)</h3></span>
-                {% else %}
+                {% elif 0 > dollar_chg|int %}
                 <span class="red"><h3>{{ dollar_chg }} ({{pct_chg}}%)</h3></span>
                 {% endif %}
             <!--div for price change arrow here  -->

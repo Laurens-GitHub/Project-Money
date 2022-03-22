@@ -3,7 +3,7 @@
 document.querySelector("#favorite-button").addEventListener("click", function(event) {
     document.getElementById("favorite-button").innerHTML = `<i class="bi bi-star-fill"></i>`;
     event.preventDefault();
-    alert(`You've saved this to your favorites`);
+    alert(`You've saved this to your watchlist`);
 }, false);
 
 function generateStockLink(symbol) {

@@ -116,7 +116,7 @@ function getBigTech() {
             <div>
                 <strong>${symbol}</strong>
             </div>
-            <span class="ms-auto">${price}</span>
+            <span class="ms-auto"><strong>${price}</strong></span>
         </div>
 
         <div class="hstack">
