@@ -21,14 +21,17 @@
         color: rgb(220, 53, 69);
     }
 
-    .stock-attribute{
-        font-weight: bold
-    }
-
     .timestamp {
         font-weight: lighter;
     }
 
     .bi-star-fill{
-        color: yellow;
+        color: gold;
     }
+
+      .chart-container {
+        position: relative;
+        margin: auto;
+        height: 80vh;
+        width: 80vw;
+      }

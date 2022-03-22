@@ -6,7 +6,7 @@
 <div class="container" id="quote_container" ui-view="">
     <div class="row" id="header-quote">
         <div class="col">
-            <h3>{{ company }} ({{ symbol }})</h3>
+            <h2>{{ company }} ({{ symbol }})</h2>
             {%if session.get("user_email")%}
             <span>
                 <form action="/favorites" method="POST" id="favorite">
@@ -22,79 +22,75 @@
     </div>
     <div class="row" id="quote-body">
         <div class="col">
-            <div><h5>{{ curr_price }}</h5></div>
+            <div><h2 class="stock-price-header">{{ curr_price }}</h2></div>
             {% set percent_change= pct_chg|int%}
                 {%if percent_change > 0 %}
-                <span class="green">{{ dollar_chg }} ({{pct_chg}}%)</span>
+                <span class="green"><h3>{{ dollar_chg }} ({{pct_chg}}%)</h3></span>
                 {% else %}
-                <span class="red">{{ dollar_chg }} ({{pct_chg}}%)</span>
+                <span class="red"><h3>{{ dollar_chg }} ({{pct_chg}}%)</h3></span>
                 {% endif %}
             <!--div for price change arrow here  -->
         </div>
-        <div class="col stock-attribute">
-            Day Range
+        <div class="col">
+            <strong>Day Range</strong>
             <div class="attribute-value">{{ day_low }} - {{ day_high }}</div>
         </div>
-        <div class="col stock-attribute">
-            Previous Close
+        <div class="col">
+            <strong>Previous Close</strong>
             <div>{{ prev_close }}</div>
         </div>
-        <div class="col stock-attribute">
-            Ask
+        <div class="col">
+            <strong>Ask</strong>
             <div>{{ ask_price }}</div>
         </div>
 
-        <div class="col stock-attribute">
-            Volume
+        <div class="col">
+            <strong>Volume</strong>
             <div>{{ volume }}</div>
         </div>
-        <div class="col stock-attribute">
-            P/E (TTM)
+        <div class="col">
+            <strong>P/E (TTM)</strong>
             <div>{{ pe_ratio }}</div>
         </div>
     </div>
     <div class="row" id="quote-body">
         <div class="col timestamp">
-            AS OF {{curr_time}} {{curr_date}}
+            As of {{curr_time}} {{curr_date}}
         </div>
-        <div class="col stock-attribute">
-            52-Week Range
+        <div class="col">
+            <strong>52-Week Range</strong>
             <div>{{ year_low }} - {{ year_high }}</div>
         </div>
-        <div class="col stock-attribute">
-            Open
+        <div class="col">
+            <strong>Open</strong>
             <div>{{ open_price }}</div>
         </div>
-        <div class="col stock-attribute">
-            Bid
+        <div class="col">
+            <strong>Bid</strong>
             <div>{{ bid_price }}</div>
         </div>
-        <div class="col stock-attribute">
-            Market Cap
+        <div class="col">
+            <strong>Market Cap</strong>
             <div>{{ market_cap }}</div>
         </div>
-        <div class="col stock-attribute">
-            Earnings Per Share
+        <div class="col">
+            <strong>Earnings Per Share</strong>
             <div>{{ eps }}</div>
         </div>
     </div>
 </div>
 
-<pre>{{ pformat(stock_json) }}</pre>
-
-
-<div class="container">
-    <h2>Price History</h2>
+<div class="container chart-container d-flex">
     <canvas id="line-time"></canvas>
-  </div>
+</div>
 
 </div>
 
 <script src="/static/js/stock.js"></script>
 
-<!-- <script>
+<script>
 window.onload = (event) =>  {
     renderStockChart("{{symbol}}");
   };
-</script> -->
+</script>
 {% endblock %}

@@ -27,7 +27,6 @@ fetch('/price_chart.json'+'?symbol='+symbol)
     let lineColor = "green"
     let closeLength = responseJson['chart']['result'][0]['indicators']['quote'][0]['close']
         if (closeLength[closeLength.length-1] < prevClose) {
-
             lineColor = "red"
         };
 
@@ -38,46 +37,75 @@ fetch('/price_chart.json'+'?symbol='+symbol)
       close: prevClose
     };
 
+    // var canvas = document.getElementById('line-time');
+    // var ctx = canvas.getContext("2d");
+    // var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    // gradient.addColorStop(0, 'rgba(250,174,50,1)');
+    // gradient.addColorStop(1, 'rgba(250,174,50,0)');
 
     new Chart(document.querySelector('#line-time'), {
-      type: 'line',
-      data: {
-          labels: data['x'],
-          datasets: [{
+        type: 'line',
+        data: {
+            labels: data['x'],
+            datasets: [{
             label: '',
             data: data['y'],
-          },
-          {
-            label: '',
-            data: data['close']
-        }
-        ],
-      },
-      options: {
+            fill: 1
+            }],
+        },
 
-        elements: {
-            line:{
-                borderColor: lineColor
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        boxWidth: 0
+                    }
+                }
             },
-            point:{
-                radius: 1
-            }
+            elements: {
+                line:{
+                    borderColor: lineColor,
+                    radius: 1
+                },
+                point:{
+                    borderColor: lineColor,
+                    backgroundColor: lineColor,
+                    pointStyle: 'cross',
+                    radius: 2
+                }
+            },
+            scales: {
+                gridlines: {
+                    display: false
+                },
+                x: {
+                    type: 'timeseries',
+                    gridlines: {
+                        display: true
+                    },
+                    legend: {
+                        labels: {
+                            boxWidth: 0,
+                        }
+                    }
+                },
+
+                y: {
+                    legend: {
+                        labels: {
+                            boxWidth: 0,
+                        }
+                    },
+
+                }
+            },
         },
-        scales: {
-          x: {
-            type: 'timeseries'
-          },
-          y: {
-            stacked: true
-          }
-        },
-      },
 
     });
 
-    //horizontal line
 })
 };
+    //horizontal line
 
 // }    new Chart(document.querySelector('#line-time'), {
 //         const horizontalLine = {

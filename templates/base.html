@@ -42,7 +42,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <form class="d-flex" action="/quote" method="GET">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
-                            <button class="btn btn-outline-success" type="submit">
+                            <button class="btn btn-info" type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
                     </form>
@@ -52,20 +52,20 @@
 
                 <span class="nav-item">
                     <a href="http://localhost:5000/user_profile">
-                        <button class="btn btn-outline-success" name="profile">Favorites</button>
+                        <button class="btn btn-warning" name="profile">Favorites</button>
                     </a>
                 </span>
 
                 <span class="nav-item">
                     <form class="container-fluid justify-content-start" action="/logoff" method="POST">
-                        <button type="submit" class="btn btn-primary">Log Off</button>
+                        <button type="submit" class="btn btn-info">Log Off</button>
                     </form>
                 </span>
                 {% else %}
             <!-- Button trigger modal (Log In)-->
                 <span class="nav-item">
                     <form class="container-fluid justify-content-start">
-                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#LoginModal">
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#LoginModal">
                             Log In
                         </button>
                     </form>
