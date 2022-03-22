@@ -1,5 +1,5 @@
     body {
-        padding-top: 65px;
+        padding-top: 95px;
     }
 
     body.container {
@@ -35,3 +35,11 @@
         height: 80vh;
         width: 80vw;
       }
+
+    .trending {
+        margin-left: 220px;
+    }
+
+    #trending {
+        font-size: larger;
+    }

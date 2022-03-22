@@ -13,3 +13,6 @@
         font-weight: bold;
     }
 
+    .card-text:last-child {
+        font-size: large;
+    }

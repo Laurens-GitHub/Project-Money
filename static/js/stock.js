@@ -65,13 +65,13 @@ fetch('/price_chart.json'+'?symbol='+symbol)
             elements: {
                 line:{
                     borderColor: lineColor,
-                    radius: 1
+                    borderWidth: 4
                 },
                 point:{
                     borderColor: lineColor,
                     backgroundColor: lineColor,
                     pointStyle: 'cross',
-                    radius: 2
+                    radius: 4
                 }
             },
             scales: {

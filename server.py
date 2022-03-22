@@ -98,10 +98,12 @@ def get_stock_quote():
                         "lang": 'en' }
         headers = {'X-API-KEY': STOCKS_KEY}
         results = requests.request("GET", quote_url, headers=headers, params=quote_query)
-        search_results = results.json()
+        search_json = results.json()
+        search_results = search_json['ResultSet'].get('Result')
 
-        return render_template("search-results.html",
-                            search_results=search_results, pformat=pformat,
+
+        return render_template("search-results.html", search_results=search_results,
+                            search_json=search_json, pformat=pformat,
                             user_query=query)
 
     elif "." in symbol:
@@ -130,6 +132,7 @@ def get_stock_quote():
 
             results = requests.request("GET", quote_url, headers=headers, params=quote_query)
             search_results = results.json()
+
 
             return render_template("search-results.html",
                                 search_results=search_results, pformat=pformat,
@@ -459,7 +462,7 @@ def process_logout():
 
     session["user_email"] = []
     session["user_id"] = []
-    flash(f"You've been logged out")
+    flash("You've been logged out")
 
     return redirect("/")
 
