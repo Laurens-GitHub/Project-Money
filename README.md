@@ -7,7 +7,9 @@ For staying updated on market news and popular stocks. You can search for domest
 
 # Tech Stack
 **Backend:** Python 3, PostgreSQL, Flask, SQLAlchemy, Jinja
+
 **Frontend:** JavaScript, jQuery, HTML 5, CSS 3, Bootstrap
+
 **APIs:** [Yahoo Finance API](https://www.yahoofinanceapi.com), [YH Finance AP](https://rapidapi.com/apidojo/api/yh-finance), [News API](https://newsapi.org/)
 
 # Installation
