@@ -159,7 +159,6 @@ function getNews() {
             );
         }
     };
-
     const createArticleAndAddToContainer = (title, description, link, imageUrl, source) => {
         const cardElement = document.createElement("div");
         cardElement.classList.add("col-md-4");
