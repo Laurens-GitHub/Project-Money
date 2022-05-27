@@ -113,7 +113,7 @@ def get_stock_quote():
 #test template
 
     # else:
-    #     return render_template("test.html", pformat=pformat, quote_json=quote_response)#rapid_json=rapid_response)#
+    #     return render_template("test.html", pformat=pformat, quote_json=quote_response)#rapid_json=rapid_response)
 
     else:
         quote_type = quote_response['quoteResponse']['result'][0]['quoteType']

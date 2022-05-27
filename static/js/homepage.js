@@ -165,18 +165,18 @@ function getNews() {
         cardElement.classList.add("news-card");
         cardElement.innerHTML = `
         <div class="col">
-                <div class="card" style="width: 25rem;">
-                    <a href="${link}" target="_blank" rel="noopener noreferrer">
-                        <h5 class="card-title">${title}</h5>
-                            <img class="card-img-top img-circle" src="${imageUrl}">
-                        <div class="card-body">
-                            <div class="article-source">${source}</div>
-                                <p class="card-text">${description}</p>
-                            </div>
+            <div class="card" style="width: 25rem;">
+                <a href="${link}" target="_blank" rel="noopener noreferrer">
+                    <h5 class="card-title">${title}</h5>
+                        <img class="card-img-top img-circle" src="${imageUrl}">
+                    <div class="card-body">
+                        <div class="article-source">${source}</div>
+                            <p class="card-text">${description}</p>
                         </div>
-                    </a>
-                </div>
+                    </div>
+                </a>
             </div>
+        </div>
 
             `;
     document.querySelector("#articles").append(cardElement);
