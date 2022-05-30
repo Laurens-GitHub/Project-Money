@@ -4,6 +4,9 @@
 
 {% block body %}
 <div>
+    <h2>Here's your {{ symbol }} quote:</h2>
+    <p> {{ company }} ({{ symbol }})</p>
+    <p> {{ curr_price }}</p>
     <pre>{{ pformat(quote_json) }}</pre>
 
 
@@ -16,9 +19,7 @@
         <input type="hidden" name="company" value="{{ company }}">
     </form>
 
-<h2>Here's your {{ symbol }} quote:</h2>
 
-<p> {{ company }} ({{ symbol }})</p>
 <p>{{ dollar_chg }}</p>
 <p>{{ pct_chg }}</p>
 <p>{{ prev_close }}</p>

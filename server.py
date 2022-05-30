@@ -25,14 +25,6 @@ app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = True
 #=======================================#
 ##############   HOMEPAGE   #############
 #=======================================#
-def two_decimal_formatter(num):
-    """Formats numbers to 2 decimal places"""
-    if isinstance(num, (int, float)):
-        result = format(num, ".2f")
-        return result
-    else:
-        return num
-
 @app.route('/')
 def show_stock_data():
     """Shows the homepage"""
@@ -74,23 +66,22 @@ def send_market_news():
 #=======================================#
 ###############   QUOTES   ##############
 #=======================================#
+def two_decimal_formatter(num):
+    """Formats numbers to two trailing decimal places"""
+    if isinstance(num, (int, float)):
+        result = format(num)
+        return result
+    else:
+        return num
 
 @app.route("/quote")
 def get_stock_quote():
     """Show a stock quote data."""
-    quote_url = "https://yfapi.net/v6/finance/quote/"
-
     symbol = request.args.get("search")
-    quote_query = {"symbols": symbol}
-    headers = {'X-API-KEY': STOCKS_KEY}
-    quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
-    quote_response = quote.json()
-    dt = datetime.now()
-    curr_date = dt.strftime("%d/%m/%Y")
-    curr_time = dt.strftime("%H:%M:%S")
+    quote_response = yfapi.get_stock_data(symbol)
+    date_time = datetime.now()
 
-# known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
-
+# if we don't get anything back, use the autocomplete route
     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
         quote_url = "https://yfapi.net/v6/finance/autocomplete"
         query = request.args.get("search")
@@ -106,286 +97,413 @@ def get_stock_quote():
                             search_json=search_json, pformat=pformat,
                             user_query=query)
 
+# if the symbol is a Future, quit early, send to later.html
     elif "." in symbol:
         return render_template("later.html")
 
+# if the symbol is found, make the API call
+    elif quote_response:
+        #create dictionary from
+        yahoo_quote = {
+            "curr_date": date_time.strftime("%d/%m/%Y"),
+            "curr_time": date_time.strftime("%H:%M:%S"),
+            "quote_type": quote_response['quoteResponse']['result'][0].get('quoteType'),
+            "symbol": quote_response['quoteResponse']['result'][0].get('symbol'),
+            "company": quote_response['quoteResponse']['result'][0].get('shortName'),
+            "curr_price": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketPrice')),
+            "dollar_chg": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketChange')),
+            "pct_chg": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketChangePercent')),
+            "prev_close": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketPreviousClose')),
+            "open_price": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketOpen')),
+            "ask_price": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('ask')),
+            "bid_price": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('bid')),
+            "day_high": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketDayHigh')),
+            "day_low": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketDayLow')),
+            "year_high": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekHigh')),
+            "year_low": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekLow')),
+            "pe_ratio": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('trailingPE')),
+            "eps": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths'))
+        }
 
-#test template
+        rapid_response = yfapi.get_rapid_api_data(symbol)
 
-    # else:
-    #     return render_template("test.html", pformat=pformat, quote_json=quote_response)#rapid_json=rapid_response)
+        # rapid_quote = {
+        #     "circulating": rapid_response['summaryDetail']['circulatingSupply'].get('longFmt'),
+        #     "company_long": rapid_response['price'].get('longName'),
+        #     "company_short": rapid_response['price'].get('shortName'),
+        #     "curr_price": rapid_response['price']['regularMarketPrice'].get('fmt'),
+        #     "day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'),
+        #     "24_day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'), #24hour figure
+        #     "day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'),
+        #     "24_day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'), #24hour figure
+        #     "day_volume": rapid_response['price']['volume24Hr'].get('longFmt'), #24hour figure
+        #     "dollar_chg": rapid_response['price']['regularMarketChange'].get('fmt'),
+        #     "expense_ratio": rapid_response['defaultKeyStatistics']['annualReportExpenseRatio'].get('fmt', '-'),
+        #     "fund_expense_ratio": rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-'),
+        #     "fund_style": rapid_response['fundProfile'].get('categoryName', '-'),
+        #     "holdings": rapid_response['topHoldings'].get('holdings'),
+        #     "inception": rapid_response['defaultKeyStatistics']['fundInceptionDate'].get('fmt'),
+        #     "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+        #     "pct_chg": rapid_response['price']['regularMarketChangePercent'].get('fmt'),
+        #     "prev_close": rapid_response['price']['regularMarketPreviousClose'].get('fmt'),
+        #     "rating": rapid_response['defaultKeyStatistics']['morningStarOverallRating'].get('fmt'),
+        #     "return_yield": rapid_response['summaryDetail']['yield'].get('fmt'),
+        #     "risk": rapid_response['defaultKeyStatistics']['morningStarRiskRating'].get('fmt'),
+        #     #"symbol": rapid_response['price']['symbol']
+        #     "symbol": rapid_response.get('symbol'),
+        #     "total_assets": rapid_response['defaultKeyStatistics']['totalAssets'].get('fmt'),
+        #     "turnover": rapid_response['defaultKeyStatistics']['annualHoldingsTurnover'].get('fmt', '-'),
+        #     "fund_turnover": rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-'),
+        #     "volume": rapid_response['price']['regularMarketVolume'].get('fmt', '-'),
+        #     #"volume": rapid_response['price']['regularMarketVolume'].get('fmt'),
+        #     "year_high": rapid_response['summaryDetail']['fiftyTwoWeekHigh'].get('fmt'),
+        #     "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
+        #     "ytd_return": rapid_response['summaryDetail']['ytdReturn'].get('fmt')
+        # }
 
-    else:
-        quote_type = quote_response['quoteResponse']['result'][0]['quoteType']
-        rapid_url = "https://yh-finance.p.rapidapi.com/stock/v2/get-summary"
-        rapid_query = {"symbol": symbol, "region": "US"}
-        rapid_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com", 'x-rapidapi-key': RAPID_KEY}
-        rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-        rapid_response = rapid_quote.json()
+        return render_template("stock.html",
+                                symbol=yahoo_quote.get('symbol'),
+                                company=yahoo_quote.get('company'),
+                                curr_price=yahoo_quote.get('curr_price'),
+                                dollar_chg=yahoo_quote.get('dollar_chg'),
+                                pct_chg=yahoo_quote.get('pct_chg'),
+                                prev_close=yahoo_quote.get('prev_close'),
+                                open_price=yahoo_quote.get('open_price'),
+                                ask_price=yahoo_quote.get('ask_price'),
+                                bid_price=yahoo_quote.get('bid_price'),
+                                day_high=yahoo_quote.get('day_high'),
+                                day_low=yahoo_quote.get('day_low'),
+                                year_high=yahoo_quote.get('year_high'),
+                                year_low=yahoo_quote.get('year_low'),
+                                volume=yahoo_quote.get('volume'),
+                                pe_ratio=yahoo_quote.get('pe_ratio'),
+                                eps=yahoo_quote.get('eps'),
+                                market_cap=yahoo_quote.get('market_cap'),
+                                curr_date=yahoo_quote.get('curr_date'),
+                                curr_time=yahoo_quote.get('curr_time'),
+                                pformat=pformat,
+                                stock_json=quote_response)
 
-        if quote_type == 'ECNQUOTE':
-            quote_url = "https://yfapi.net/v6/finance/autocomplete"
-            query = request.args.get("search")
-            quote_query = {"query": query,
-                            "lang": 'en' }
-            headers = {'X-API-KEY': STOCKS_KEY}
 
-            results = requests.request("GET", quote_url, headers=headers, params=quote_query)
-            search_results = results.json()
+# #test template
+
+#     else:
+#         return render_template("test.html", pformat=pformat, quote_json=quote_response)#rapid_json=rapid_response)
 
 
-            return render_template("search-results.html",
-                                search_results=search_results, pformat=pformat,
-                                user_query=query)
 
-        elif quote_type == "EQUITY":
 
-            symbol = quote_response['quoteResponse']['result'][0]['symbol']
-            company = quote_response['quoteResponse']['result'][0]['shortName']
-            curr_price = format(quote_response['quoteResponse']['result'][0]['regularMarketPrice'], ".2f")
-            dollar_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChange'], ".2f")
-            pct_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChangePercent'], ".2f")
-            prev_close = format(quote_response['quoteResponse']['result'][0]['regularMarketPreviousClose'], ".2f")
-            open_price = format(quote_response['quoteResponse']['result'][0]['regularMarketOpen'], ".2f")
-            ask_price = format(quote_response['quoteResponse']['result'][0]['ask'], ".2f")
-            bid_price = format(quote_response['quoteResponse']['result'][0]['bid'], ".2f")
-            day_high = format(quote_response['quoteResponse']['result'][0]['regularMarketDayHigh'], ".2f")
-            day_low = format(quote_response['quoteResponse']['result'][0]['regularMarketDayLow'], ".2f")
-            year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
-            year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
-            volume = rapid_response['price']['regularMarketVolume']['fmt']
-            pe_ratio = quote_response['quoteResponse']['result'][0].get('trailingPE', '-')
-            pe_ratio = two_decimal_formatter(pe_ratio)
-            eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths', '-')
-            eps = two_decimal_formatter(eps)
-            market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
-            market_cap = two_decimal_formatter(market_cap)
-            return render_template("stock.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    prev_close=prev_close,
-                                    open_price=open_price,
-                                    ask_price=ask_price,
-                                    bid_price=bid_price,
-                                    day_high=day_high,
-                                    day_low=day_low,
-                                    year_high=year_high,
-                                    year_low=year_low,
-                                    volume=volume,
-                                    pe_ratio=pe_ratio,
-                                    eps=eps,
-                                    market_cap=market_cap,
-                                    curr_date=curr_date,
-                                    curr_time=curr_time,
-                                    pformat=pformat,
-                                    stock_json=quote_response)
 
-        elif quote_type == "ETF":
-            symbol = quote_response['quoteResponse']['result'][0]['symbol']
-            company = quote_response['quoteResponse']['result'][0]['shortName']
-            curr_price = format(quote_response['quoteResponse']['result'][0]['regularMarketPrice'], ".2f")
-            dollar_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChange'], ".2f")
-            pct_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChangePercent'], ".2f")
-            prev_close = format(quote_response['quoteResponse']['result'][0]['regularMarketPreviousClose'], ".2f")
-            open_price = format(quote_response['quoteResponse']['result'][0]['regularMarketOpen'], ".2f")
-            ask_price = format(quote_response['quoteResponse']['result'][0]['ask'], ".2f")
-            bid_price = format(quote_response['quoteResponse']['result'][0]['bid'], ".2f")
-            day_high = format(quote_response['quoteResponse']['result'][0]['regularMarketDayHigh'], ".2f")
-            day_low = format(quote_response['quoteResponse']['result'][0]['regularMarketDayLow'], ".2f")
-            year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
-            year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
-#TODO: format values to 2 decimal places
-            pe_ratio = quote_response['quoteResponse']['result'][0].get('trailingPE', '-')
-            eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths', '-')
-            volume = rapid_response['price']['regularMarketVolume'].get('fmt', '-')
-            market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
-            expense_ratio = rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-')
-            turnover = rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-')
-            fund_style = rapid_response['fundProfile'].get('categoryName', '-')
-            return render_template("ETF.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    prev_close=prev_close,
-                                    open_price=open_price,
-                                    ask_price=ask_price,
-                                    bid_price=bid_price,
-                                    day_high=day_high,
-                                    day_low=day_low,
-                                    year_high=year_high,
-                                    year_low=year_low,
-                                    volume=volume,
-                                    pe_ratio=pe_ratio,
-                                    eps=eps,
-                                    market_cap=market_cap,
-                                    expense_ratio=expense_ratio,
-                                    turnover=turnover,
-                                    fund_style=fund_style,
-                                    pformat=pformat,
-                                    ETF_json=quote_response, rapid_json=rapid_response)
 
-        elif quote_type == "INDEX":
-            symbol = quote_response['quoteResponse']['result'][0]['symbol']
-            company = quote_response['quoteResponse']['result'][0]['shortName']
-            curr_price = format(quote_response['quoteResponse']['result'][0]['regularMarketPrice'], ".2f")
-            dollar_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChange'], ".2f")
-            pct_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChangePercent'], ".2f")
-            open_price = format(quote_response['quoteResponse']['result'][0]['regularMarketOpen'], ".2f")
-            prev_close = format(quote_response['quoteResponse']['result'][0]['regularMarketPreviousClose'], ".2f")
-            day_high = format(quote_response['quoteResponse']['result'][0]['regularMarketDayHigh'], ".2f")
-            day_low = format(quote_response['quoteResponse']['result'][0]['regularMarketDayLow'], ".2f")
-            year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
-            year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
-            return render_template("index.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    open_price=open_price,
-                                    prev_close=prev_close,
-                                    day_high=day_high,
-                                    day_low=day_low,
-                                    year_high=year_high,
-                                    year_low=year_low,
-        pformat=pformat, index_json=quote_response)
 
-        elif quote_type == "MUTUALFUND":
-            symbol = rapid_response['symbol']
-            company = rapid_response['price']['longName']
-            curr_price = rapid_response['price']['regularMarketPrice']['fmt']
-            dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
-            pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
-            prev_close = rapid_response['price']['regularMarketPreviousClose']['fmt']
-            year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
-            year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
-            ytd_return = rapid_response['summaryDetail']['ytdReturn']['fmt']
-            expense_ratio = rapid_response['defaultKeyStatistics']['annualReportExpenseRatio'].get('fmt', '-')
-            total_assets = rapid_response['defaultKeyStatistics']['totalAssets']['fmt']
-            fund_style = rapid_response['fundProfile'].get('categoryName', '-')
-            return_yield = rapid_response['summaryDetail']['yield']['fmt']
-            turnover = rapid_response['defaultKeyStatistics']['annualHoldingsTurnover'].get('fmt', '-')
-            rating = rapid_response['defaultKeyStatistics']['morningStarOverallRating']['fmt']
-            risk = rapid_response['defaultKeyStatistics']['morningStarRiskRating']['fmt']
-            inception = rapid_response['defaultKeyStatistics']['fundInceptionDate']['fmt']
-            holdings = rapid_response['topHoldings']['holdings']
-            return render_template("fund.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    prev_close=prev_close,
-                                    year_high=year_high,
-                                    year_low=year_low,
-                                    ytd_return=ytd_return,
-                                    expense_ratio=expense_ratio,
-                                    total_assets=total_assets,
-                                    fund_style=fund_style,
-                                    return_yield=return_yield,
-                                    turnover=turnover,
-                                    rating=rating,
-                                    risk=risk,
-                                    inception=inception,
-                                    holdings=holdings,
-                                    pformat=pformat,
-                                    fund_json=rapid_response)
+#     quote_url = "https://yfapi.net/v6/finance/quote/"
 
-        elif quote_type == "CURRENCY":
-            symbol = quote_response['quoteResponse']['result'][0]['symbol']
-            company = quote_response['quoteResponse']['result'][0]['shortName']
-            curr_price = format(quote_response['quoteResponse']['result'][0]['regularMarketPrice'], ".2f")
-            dollar_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChange'], ".2f")
-            pct_chg = format(quote_response['quoteResponse']['result'][0]['regularMarketChangePercent'], ".2f")
-            prev_close = format(quote_response['quoteResponse']['result'][0]['regularMarketPreviousClose'], ".2f")
-            open_price = format(quote_response['quoteResponse']['result'][0]['regularMarketOpen'], ".2f")
-            ask_price = format(quote_response['quoteResponse']['result'][0]['ask'], ".2f")
-            bid_price = format(quote_response['quoteResponse']['result'][0]['bid'], ".2f")
-            day_high = format(quote_response['quoteResponse']['result'][0]['regularMarketDayHigh'], ".2f")
-            day_low = format(quote_response['quoteResponse']['result'][0]['regularMarketDayLow'], ".2f")
-            year_high = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekHigh'], ".2f")
-            year_low = format(quote_response['quoteResponse']['result'][0]['fiftyTwoWeekLow'], ".2f")
-            return render_template("currency.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    prev_close=prev_close,
-                                    open_price=open_price,
-                                    ask_price=ask_price,
-                                    bid_price=bid_price,
-                                    day_high=day_high,
-                                    day_low=day_low,
-                                    year_high=year_high,
-                                    year_low=year_low,
-                                    pformat=pformat,
-                                    currency_json=quote_response)
+#     symbol = request.args.get("search")
+#     quote_query = {"symbols": symbol}
+#     headers = {'X-API-KEY': STOCKS_KEY}
+#     quote = requests.request("GET", quote_url, headers=headers, params=quote_query)
+#     quote_response = quote.json()
+#     date_time = datetime.now()
+#     curr_date = date_time.strftime("%d/%m/%Y")
+#     curr_time = date_time.strftime("%H:%M:%S")
 
-        elif quote_type == "CRYPTOCURRENCY":
-            rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-            rapid_response = rapid_quote.json()
-            symbol = rapid_response['price']['symbol']
-            company = rapid_response['price']['shortName']
-            curr_price = rapid_response['price']['regularMarketPrice']['fmt']
-            dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
-            pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
-            day_high = rapid_response['price']['regularMarketDayHigh']['fmt'] #24hour figure
-            day_low = rapid_response['price']['regularMarketDayLow']['fmt']  #24hour figure
-            year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
-            year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
-            market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
-            day_volume = rapid_response['price']['volume24Hr']['longFmt'] #24hour figure
-            circulating = rapid_response['summaryDetail']['circulatingSupply']['longFmt']
-            return render_template("crypto.html",
-                                    symbol=symbol,
-                                    company=company,
-                                    curr_price=curr_price,
-                                    dollar_chg=dollar_chg,
-                                    pct_chg=pct_chg,
-                                    day_high=day_high,
-                                    day_low=day_low,
-                                    year_high=year_high,
-                                    year_low=year_low,
-                                    market_cap=market_cap,
-                                    day_volume=day_volume,
-                                    circulating=circulating,
-                                    pformat=pformat,
-                                    crypto_json=rapid_response)
+# # known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
 
-        elif quote_type == "FUTURE":
-                    rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
-                    rapid_response = rapid_quote.json()
-                    symbol = rapid_response['price']['symbol']
-                    company = rapid_response['price']['shortName']
-                    curr_price = rapid_response['price']['regularMarketPrice']['fmt']
-                    dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
-                    pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
-                    day_high = rapid_response['price']['regularMarketDayHigh']['fmt'] #24hour figure
-                    day_low = rapid_response['price']['regularMarketDayLow']['fmt']  #24hour figure
-                    year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
-                    year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
-                    return render_template("future.html",
-                                            symbol=symbol,
-                                            company=company,
-                                            curr_price=curr_price,
-                                            dollar_chg=dollar_chg,
-                                            pct_chg=pct_chg,
-                                            day_high=day_high,
-                                            day_low=day_low,
-                                            year_high=year_high,
-                                            year_low=year_low,
-                                            pformat=pformat,
-                                            future_json=rapid_response)
+#     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
+#         quote_url = "https://yfapi.net/v6/finance/autocomplete"
+#         query = request.args.get("search")
+#         quote_query = {"query": query,
+#                         "lang": 'en' }
+#         headers = {'X-API-KEY': STOCKS_KEY}
+#         results = requests.request("GET", quote_url, headers=headers, params=quote_query)
+#         search_json = results.json()
+#         search_results = search_json['ResultSet'].get('Result')
 
-        # else:
-        #     # quote_response == {'message': 'Limit Exceeded'}:
-        #     return render_template("limit.html")
+
+#         return render_template("search-results.html", search_results=search_results,
+#                             search_json=search_json, pformat=pformat,
+#                             user_query=query)
+
+#     elif "." in symbol:
+#         return render_template("later.html")
+
+
+# #test template
+
+#     # else:
+#     #     return render_template("test.html", pformat=pformat, quote_json=quote_response)#rapid_json=rapid_response)
+
+#     else:
+#         quote_type = quote_response['quoteResponse']['result'][0].get('quoteType']
+#         rapid_url = "https://yh-finance.p.rapidapi.com/stock/v2/get-summary"
+#         rapid_query = {"symbol": symbol, "region": "US"}
+#         rapid_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com", 'x-rapidapi-key': RAPID_KEY}
+#         rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
+#         rapid_response = rapid_quote.json()
+
+#         if quote_type == 'ECNQUOTE':
+#             quote_url = "https://yfapi.net/v6/finance/autocomplete"
+#             query = request.args.get("search")
+#             quote_query = {"query": query,
+#                             "lang": 'en' }
+#             headers = {'X-API-KEY': STOCKS_KEY}
+
+#             results = requests.request("GET", quote_url, headers=headers, params=quote_query)
+#             search_results = results.json()
+
+
+#             return render_template("search-results.html",
+#                                 search_results=search_results, pformat=pformat,
+#                                 user_query=query)
+
+#         elif quote_type == "EQUITY":
+
+#             symbol = quote_response['quoteResponse']['result'][0].get('symbol']
+#             company = quote_response['quoteResponse']['result'][0].get('shortName']
+#             curr_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketPrice'))
+#             dollar_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChange'))
+#             pct_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChangePercent'))
+#             prev_close = format(quote_response['quoteResponse']['result'][0].get('regularMarketPreviousClose'))
+#             open_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketOpen'))
+#             ask_price = format(quote_response['quoteResponse']['result'][0].get('ask'))
+#             bid_price = format(quote_response['quoteResponse']['result'][0].get('bid'))
+#             day_high = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayHigh'))
+#             day_low = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayLow'))
+#             year_high = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekHigh'))
+#             year_low = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekLow'))
+#             volume = rapid_response['price']['regularMarketVolume']['fmt']
+#             pe_ratio = quote_response['quoteResponse']['result'][0].get('trailingPE', '-')
+#             pe_ratio = two_decimal_formatter(pe_ratio)
+#             eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths', '-')
+#             eps = two_decimal_formatter(eps)
+#             market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
+#             market_cap = two_decimal_formatter(market_cap)
+#             return render_template("stock.html",
+#                                     symbol=symbol,
+#                                     company=company,
+#                                     curr_price=curr_price,
+#                                     dollar_chg=dollar_chg,
+#                                     pct_chg=pct_chg,
+#                                     prev_close=prev_close,
+#                                     open_price=open_price,
+#                                     ask_price=ask_price,
+#                                     bid_price=bid_price,
+#                                     day_high=day_high,
+#                                     day_low=day_low,
+#                                     year_high=year_high,
+#                                     year_low=year_low,
+#                                     volume=volume,
+#                                     pe_ratio=pe_ratio,
+#                                     eps=eps,
+#                                     market_cap=market_cap,
+#                                     curr_date=curr_date,
+#                                     curr_time=curr_time,
+#                                     pformat=pformat,
+#                                     stock_json=quote_response)
+
+#         elif quote_type == "ETF":
+#             symbol = quote_response['quoteResponse']['result'][0].get('symbol']
+#             company = quote_response['quoteResponse']['result'][0].get('shortName']
+#             curr_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketPrice'))
+#             dollar_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChange'))
+#             pct_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChangePercent'))
+#             prev_close = format(quote_response['quoteResponse']['result'][0].get('regularMarketPreviousClose'))
+#             open_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketOpen'))
+#             ask_price = format(quote_response['quoteResponse']['result'][0].get('ask'))
+#             bid_price = format(quote_response['quoteResponse']['result'][0].get('bid'))
+#             day_high = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayHigh'))
+#             day_low = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayLow'))
+#             year_high = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekHigh'))
+#             year_low = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekLow'))
+# #TODO: format values to 2 decimal places
+#             pe_ratio = quote_response['quoteResponse']['result'][0].get('trailingPE', '-')
+#             eps = quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths', '-')
+#             volume = rapid_response['price']['regularMarketVolume'].get('fmt', '-')
+#             market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
+#             expense_ratio = rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-')
+#             turnover = rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-')
+#             fund_style = rapid_response['fundProfile'].get('categoryName', '-')
+#             return render_template("ETF.html",
+#                                     symbol=symbol,
+#                                     company=company,
+#                                     curr_price=curr_price,
+#                                     dollar_chg=dollar_chg,
+#                                     pct_chg=pct_chg,
+#                                     prev_close=prev_close,
+#                                     open_price=open_price,
+#                                     ask_price=ask_price,
+#                                     bid_price=bid_price,
+#                                     day_high=day_high,
+#                                     day_low=day_low,
+#                                     year_high=year_high,
+#                                     year_low=year_low,
+#                                     volume=volume,
+#                                     pe_ratio=pe_ratio,
+#                                     eps=eps,
+#                                     market_cap=market_cap,
+#                                     expense_ratio=expense_ratio,
+#                                     turnover=turnover,
+#                                     fund_style=fund_style,
+#                                     pformat=pformat,
+#                                     ETF_json=quote_response, rapid_json=rapid_response)
+
+#         elif quote_type == "INDEX":
+#             symbol = quote_response['quoteResponse']['result'][0].get('symbol']
+#             company = quote_response['quoteResponse']['result'][0].get('shortName']
+#             curr_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketPrice'))
+#             dollar_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChange'))
+#             pct_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChangePercent'))
+#             open_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketOpen'))
+#             prev_close = format(quote_response['quoteResponse']['result'][0].get('regularMarketPreviousClose'))
+#             day_high = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayHigh'))
+#             day_low = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayLow'))
+#             year_high = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekHigh'))
+#             year_low = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekLow'))
+#             return render_template("index.html",
+#                                     symbol=symbol,
+#                                     company=company,
+#                                     curr_price=curr_price,
+#                                     dollar_chg=dollar_chg,
+#                                     pct_chg=pct_chg,
+#                                     open_price=open_price,
+#                                     prev_close=prev_close,
+#                                     day_high=day_high,
+#                                     day_low=day_low,
+#                                     year_high=year_high,
+#                                     year_low=year_low,
+#         pformat=pformat, index_json=quote_response)
+
+#         elif quote_type == "MUTUALFUND":
+#             symbol = rapid_response['symbol']
+#             company = rapid_response['price']['longName']
+#             curr_price = rapid_response['price']['regularMarketPrice']['fmt']
+#             dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
+#             pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
+#             prev_close = rapid_response['price']['regularMarketPreviousClose']['fmt']
+#             year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
+#             year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
+#             ytd_return = rapid_response['summaryDetail']['ytdReturn']['fmt']
+#             expense_ratio = rapid_response['defaultKeyStatistics']['annualReportExpenseRatio'].get('fmt', '-')
+#             total_assets = rapid_response['defaultKeyStatistics']['totalAssets']['fmt']
+#             fund_style = rapid_response['fundProfile'].get('categoryName', '-')
+#             return_yield = rapid_response['summaryDetail']['yield']['fmt']
+#             turnover = rapid_response['defaultKeyStatistics']['annualHoldingsTurnover'].get('fmt', '-')
+#             rating = rapid_response['defaultKeyStatistics']['morningStarOverallRating']['fmt']
+#             risk = rapid_response['defaultKeyStatistics']['morningStarRiskRating']['fmt']
+#             inception = rapid_response['defaultKeyStatistics']['fundInceptionDate']['fmt']
+#             holdings = rapid_response['topHoldings']['holdings']
+#             return render_template("fund.html",
+#                                     symbol=symbol,
+#                                     company=company,
+#                                     curr_price=curr_price,
+#                                     dollar_chg=dollar_chg,
+#                                     pct_chg=pct_chg,
+#                                     prev_close=prev_close,
+#                                     year_high=year_high,
+#                                     year_low=year_low,
+#                                     ytd_return=ytd_return,
+#                                     expense_ratio=expense_ratio,
+#                                     total_assets=total_assets,
+#                                     fund_style=fund_style,
+#                                     return_yield=return_yield,
+#                                     turnover=turnover,
+#                                     rating=rating,
+#                                     risk=risk,
+#                                     inception=inception,
+#                                     holdings=holdings,
+#                                     pformat=pformat,
+#                                     fund_json=rapid_response)
+
+#         elif quote_type == "CURRENCY":
+#             symbol = quote_response['quoteResponse']['result'][0].get('symbol']
+#             company = quote_response['quoteResponse']['result'][0].get('shortName']
+#             curr_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketPrice'))
+#             dollar_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChange'))
+#             pct_chg = format(quote_response['quoteResponse']['result'][0].get('regularMarketChangePercent'))
+#             prev_close = format(quote_response['quoteResponse']['result'][0].get('regularMarketPreviousClose'))
+#             open_price = format(quote_response['quoteResponse']['result'][0].get('regularMarketOpen'))
+#             ask_price = format(quote_response['quoteResponse']['result'][0].get('ask'))
+#             bid_price = format(quote_response['quoteResponse']['result'][0].get('bid'))
+#             day_high = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayHigh'))
+#             day_low = format(quote_response['quoteResponse']['result'][0].get('regularMarketDayLow'))
+#             year_high = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekHigh'))
+#             year_low = format(quote_response['quoteResponse']['result'][0].get('fiftyTwoWeekLow'))
+#             return render_template("currency.html",
+#                                     symbol=symbol,
+#                                     company=company,
+#                                     curr_price=curr_price,
+#                                     dollar_chg=dollar_chg,
+#                                     pct_chg=pct_chg,
+#                                     prev_close=prev_close,
+#                                     open_price=open_price,
+#                                     ask_price=ask_price,
+#                                     bid_price=bid_price,
+#                                     day_high=day_high,
+#                                     day_low=day_low,
+#                                     year_high=year_high,
+#                                     year_low=year_low,
+#                                     pformat=pformat,
+#                                     currency_json=quote_response)
+
+#         elif quote_type == "CRYPTOCURRENCY":
+#             rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
+#             rapid_response = rapid_quote.json()
+#             symbol = rapid_response['price']['symbol']
+#             company = rapid_response['price']['shortName']
+#             curr_price = rapid_response['price']['regularMarketPrice']['fmt']
+#             dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
+#             pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
+#             day_high = rapid_response['price']['regularMarketDayHigh']['fmt'] #24hour figure
+#             day_low = rapid_response['price']['regularMarketDayLow']['fmt']  #24hour figure
+#             year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
+#             year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
+#             market_cap = rapid_response['price']['marketCap'].get('fmt', '-')
+#             day_volume = rapid_response['price']['volume24Hr']['longFmt'] #24hour figure
+#             circulating = rapid_response['summaryDetail']['circulatingSupply']['longFmt']
+#             return render_template("crypto.html",
+#                                     symbol=symbol,
+#                                     company=company,
+#                                     curr_price=curr_price,
+#                                     dollar_chg=dollar_chg,
+#                                     pct_chg=pct_chg,
+#                                     day_high=day_high,
+#                                     day_low=day_low,
+#                                     year_high=year_high,
+#                                     year_low=year_low,
+#                                     market_cap=market_cap,
+#                                     day_volume=day_volume,
+#                                     circulating=circulating,
+#                                     pformat=pformat,
+#                                     crypto_json=rapid_response)
+
+#         elif quote_type == "FUTURE":
+#                     rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
+#                     rapid_response = rapid_quote.json()
+#                     symbol = rapid_response['price']['symbol']
+#                     company = rapid_response['price']['shortName']
+#                     curr_price = rapid_response['price']['regularMarketPrice']['fmt']
+#                     dollar_chg = rapid_response['price']['regularMarketChange']['fmt']
+#                     pct_chg = rapid_response['price']['regularMarketChangePercent']['fmt']
+#                     day_high = rapid_response['price']['regularMarketDayHigh']['fmt'] #24hour figure
+#                     day_low = rapid_response['price']['regularMarketDayLow']['fmt']  #24hour figure
+#                     year_high = rapid_response['summaryDetail']['fiftyTwoWeekHigh']['fmt']
+#                     year_low = rapid_response['summaryDetail']['fiftyTwoWeekLow']['fmt']
+#                     return render_template("future.html",
+#                                             symbol=symbol,
+#                                             company=company,
+#                                             curr_price=curr_price,
+#                                             dollar_chg=dollar_chg,
+#                                             pct_chg=pct_chg,
+#                                             day_high=day_high,
+#                                             day_low=day_low,
+#                                             year_high=year_high,
+#                                             year_low=year_low,
+#                                             pformat=pformat,
+#                                             future_json=rapid_response)
+
+#         # else:
+#         #     # quote_response == {'message': 'Limit Exceeded'}:
+#         #     return render_template("limit.html")
 
 @app.route("/price_chart.json")
 def send_chart_data():

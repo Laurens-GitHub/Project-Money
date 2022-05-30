@@ -1,33 +1,27 @@
-# From anlu
-# # Write a yfapi.py module that would make the following code work, and then
-# # use this module in server.py in the appropriate places
-# from yfapi import YFAPIClient
-
-# yf_client = YFAPIClient(STOCKS_KEY)
-
-# # for getting quotes
-# quotes = yf_client.quotes(".INX,.DJI,NDAQ,AAPL,MSFT,GOOGL,AMZN,FB")
-
-# # for getting trends
-# trends = yf_client.trends()  # this can have a default region argument of "US"
-
-# # for getting autocomplete
-# quotes = yf_client.autocomplete("XXX")
-
 import requests
 import os
 
 STOCKS_KEY = os.environ['YAHOO_KEY']
 HEADERS = {'X-API-KEY': STOCKS_KEY}
+RAPID_KEY = os.environ['RAPID_KEY']
 
 def get_stock_data(symbol):
-    """Gets quote data by symbol"""
+    """Gets quote data by symbol from YF API"""
     quote_url = 'https://yfapi.net/v6/finance/quote/'
     quote_query = {"symbols": symbol}
     quote = requests.request("GET", quote_url, headers=HEADERS, params=quote_query)
     quote_json = quote.json()
 
     return quote_json
+
+def get_rapid_api_data(symbol):
+    """Gets quote data by symbol from Rapid API"""
+    rapid_url = "https://yh-finance.p.rapidapi.com/stock/v2/get-summary"
+    rapid_query = {"symbol": symbol, "region": "US"}
+    rapid_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com", 'x-rapidapi-key': RAPID_KEY}
+    rapid_quote = requests.request("GET", rapid_url, headers=rapid_headers, params=rapid_query)
+
+    return rapid_quote.json()
 
 def get_chart_data(symbol):
     """Gets stock chart data by symbol"""
