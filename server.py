@@ -127,39 +127,56 @@ def get_stock_quote():
 
         rapid_response = yfapi.get_rapid_api_data(symbol)
 
-        # rapid_quote = {
-        #     "circulating": rapid_response['summaryDetail']['circulatingSupply'].get('longFmt'),
-        #     "company_long": rapid_response['price'].get('longName'),
-        #     "company_short": rapid_response['price'].get('shortName'),
-        #     "curr_price": rapid_response['price']['regularMarketPrice'].get('fmt'),
-        #     "day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'),
-        #     "24_day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'), #24hour figure
-        #     "day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'),
-        #     "24_day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'), #24hour figure
-        #     "day_volume": rapid_response['price']['volume24Hr'].get('longFmt'), #24hour figure
-        #     "dollar_chg": rapid_response['price']['regularMarketChange'].get('fmt'),
-        #     "expense_ratio": rapid_response['defaultKeyStatistics']['annualReportExpenseRatio'].get('fmt', '-'),
-        #     "fund_expense_ratio": rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-'),
-        #     "fund_style": rapid_response['fundProfile'].get('categoryName', '-'),
-        #     "holdings": rapid_response['topHoldings'].get('holdings'),
-        #     "inception": rapid_response['defaultKeyStatistics']['fundInceptionDate'].get('fmt'),
-        #     "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
-        #     "pct_chg": rapid_response['price']['regularMarketChangePercent'].get('fmt'),
-        #     "prev_close": rapid_response['price']['regularMarketPreviousClose'].get('fmt'),
-        #     "rating": rapid_response['defaultKeyStatistics']['morningStarOverallRating'].get('fmt'),
-        #     "return_yield": rapid_response['summaryDetail']['yield'].get('fmt'),
-        #     "risk": rapid_response['defaultKeyStatistics']['morningStarRiskRating'].get('fmt'),
-        #     #"symbol": rapid_response['price']['symbol']
-        #     "symbol": rapid_response.get('symbol'),
-        #     "total_assets": rapid_response['defaultKeyStatistics']['totalAssets'].get('fmt'),
-        #     "turnover": rapid_response['defaultKeyStatistics']['annualHoldingsTurnover'].get('fmt', '-'),
-        #     "fund_turnover": rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-'),
-        #     "volume": rapid_response['price']['regularMarketVolume'].get('fmt', '-'),
-        #     #"volume": rapid_response['price']['regularMarketVolume'].get('fmt'),
-        #     "year_high": rapid_response['summaryDetail']['fiftyTwoWeekHigh'].get('fmt'),
-        #     "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
-        #     "ytd_return": rapid_response['summaryDetail']['ytdReturn'].get('fmt')
-        # }
+        if yahoo_quote['quote_type'] == "EQUITY":
+            rapid_quote = {
+                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+                "volume": rapid_response['price']['regularMarketVolume'].get('fmt'),
+            }
+
+        elif yahoo_quote['quote_type'] == "ETF":
+            rapid_quote = {
+                "fund_expense_ratio": rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-'),
+                "fund_style": rapid_response['fundProfile'].get('categoryName', '-'),
+                "fund_turnover": rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-'),
+                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+                "volume": rapid_response['price']['regularMarketVolume'].get('fmt', '-'),
+            }
+
+        elif yahoo_quote['quote_type'] == "CRYPTOCURRENCY":
+            rapid_quote = {
+                "24_day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'), #24hour figure
+                "24_day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'), #24hour figure
+                "circulating": rapid_response['summaryDetail']['circulatingSupply'].get('longFmt'),
+                "company_short": rapid_response['price'].get('shortName'),
+                "curr_price": rapid_response['price']['regularMarketPrice'].get('fmt'),
+                "day_volume": rapid_response['price']['volume24Hr'].get('longFmt'), #24hour figure
+                "dollar_chg": rapid_response['price']['regularMarketChange'].get('fmt'),
+                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+                "pct_chg": rapid_response['price']['regularMarketChangePercent'].get('fmt'),
+                "symbol": rapid_response['price'].get('symbol'),
+                "year_high": rapid_response['summaryDetail']['fiftyTwoWeekHigh'].get('fmt'),
+                "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
+            }
+
+        elif yahoo_quote['quote_type'] == "MUTUALFUND":
+            rapid_quote = {
+                "company_long": rapid_response['price'].get('longName'),
+                "day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'),
+                "day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'),
+                "expense_ratio": rapid_response['defaultKeyStatistics']['annualReportExpenseRatio'].get('fmt', '-'),
+                "holdings": rapid_response['topHoldings'].get('holdings'),
+                #"inception": rapid_response['defaultKeyStatistics']['fundInceptionDate'].get('fmt'),
+                "prev_close": rapid_response['price']['regularMarketPreviousClose'].get('fmt'),
+                "rating": rapid_response['defaultKeyStatistics']['morningStarOverallRating'].get('fmt'),
+                "return_yield": rapid_response['summaryDetail']['yield'].get('fmt'),
+                "risk": rapid_response['defaultKeyStatistics']['morningStarRiskRating'].get('fmt'),
+                "symbol": rapid_response.get('symbol'),
+                "total_assets": rapid_response['defaultKeyStatistics']['totalAssets'].get('fmt'),
+                "turnover": rapid_response['defaultKeyStatistics']['annualHoldingsTurnover'].get('fmt', '-'),
+                "ytd_return": rapid_response['summaryDetail']['ytdReturn'].get('fmt')
+            }
+
+        yahoo_quote.update(rapid_quote)
 
         return render_template("stock.html",
                                 symbol=yahoo_quote.get('symbol'),
