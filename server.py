@@ -103,11 +103,12 @@ def get_stock_quote():
 
 # if the symbol is found, make the API call
     else:
-        #create dictionary from
+        #this dictionary covers all info needed for Currency and most for Equities/ETFs
         yahoo_quote = {
             "curr_date": date_time.strftime("%d/%m/%Y"),
             "curr_time": date_time.strftime("%H:%M:%S"),
             "quote_type": quote_response['quoteResponse']['result'][0].get('quoteType'),
+# known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
             "symbol": quote_response['quoteResponse']['result'][0].get('symbol'),
             "company": quote_response['quoteResponse']['result'][0].get('shortName'),
             "curr_price": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('regularMarketPrice')),
@@ -125,26 +126,10 @@ def get_stock_quote():
             "eps": two_decimal_formatter(quote_response['quoteResponse']['result'][0].get('epsTrailingTwelveMonths'))
         }
 
+# supplement any additional info with Rapid API:
         rapid_response = yfapi.get_rapid_api_data(symbol)
 
-# if the quote_type is not any of the above, it must be "FUTURE" or "CRYPTOCURRENCY"
-        if yahoo_quote['quote_type'] == "CRYPTOCURRENCY" or "FUTURE":
-            rapid_quote = {
-                "24_day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'), #24hour figure
-                "24_day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'), #24hour figure
-                "circulating": rapid_response['summaryDetail']['circulatingSupply'].get('longFmt'),
-                "company_short": rapid_response['price'].get('shortName'),
-                "curr_price": rapid_response['price']['regularMarketPrice'].get('fmt'),
-                "day_volume": rapid_response['price']['volume24Hr'].get('longFmt'), #24hour figure
-                "dollar_chg": rapid_response['price']['regularMarketChange'].get('fmt'),
-                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
-                "pct_chg": rapid_response['price']['regularMarketChangePercent'].get('fmt'),
-                "symbol": rapid_response['price'].get('symbol'),
-                "year_high": rapid_response['summaryDetail']['fiftyTwoWeekHigh'].get('fmt'),
-                "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
-            }
-
-        elif yahoo_quote['quote_type'] == "EQUITY":
+        if yahoo_quote['quote_type'] == "EQUITY":
             rapid_quote = {
                 "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
                 "volume": rapid_response['price']['regularMarketVolume'].get('fmt'),
@@ -182,6 +167,22 @@ def get_stock_quote():
                 "ytd_return": rapid_response['summaryDetail']['ytdReturn'].get('fmt')
             }
 
+# we require the same info for Crypto and Futures
+        elif yahoo_quote['quote_type'] == "CRYPTOCURRENCY" or "FUTURE":
+            rapid_quote = {
+                "24_day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'), #24hour figure
+                "24_day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'), #24hour figure
+                "circulating": rapid_response['summaryDetail']['circulatingSupply'].get('longFmt'),
+                "company_short": rapid_response['price'].get('shortName'),
+                "curr_price": rapid_response['price']['regularMarketPrice'].get('fmt'),
+                "day_volume": rapid_response['price']['volume24Hr'].get('longFmt'), #24hour figure
+                "dollar_chg": rapid_response['price']['regularMarketChange'].get('fmt'),
+                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+                "pct_chg": rapid_response['price']['regularMarketChangePercent'].get('fmt'),
+                "symbol": rapid_response['price'].get('symbol'),
+                "year_high": rapid_response['summaryDetail']['fiftyTwoWeekHigh'].get('fmt'),
+                "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
+            }
 
         yahoo_quote.update(rapid_quote)
 
@@ -210,7 +211,6 @@ def get_stock_quote():
 
 
 # #test template
-
 #     else:
 #         return render_template("test.html", pformat=pformat, quote_json=quote_response)#rapid_json=rapid_response)
 
@@ -231,7 +231,7 @@ def get_stock_quote():
 #     curr_date = date_time.strftime("%d/%m/%Y")
 #     curr_time = date_time.strftime("%H:%M:%S")
 
-# # known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
+# known values for quote_type: "ECNQUOTE", "EQUITY", "ETF", "FUTURE", "INDEX", "MUTUALFUND", "CURRENCY", "CRYPTOCURRENCY"
 
 #     if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
 #         quote_url = "https://yfapi.net/v6/finance/autocomplete"
