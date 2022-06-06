@@ -81,8 +81,12 @@ def get_stock_quote():
     quote_response = yfapi.get_stock_data(symbol)
     date_time = datetime.now()
 
+# if we've reached our API limit, quit early
+    if quote_response == {'message': 'Limit Exceeded'}:
+        return render_template("limit.html")
+
 # if we don't get anything back, use the autocomplete route
-    if quote_response == {'quoteResponse': {'error': None, 'result': []}}:
+    elif quote_response == {'quoteResponse': {'error': None, 'result': []}}:
         quote_url = "https://yfapi.net/v6/finance/autocomplete"
         query = request.args.get("search")
         quote_query = {"query": query,
@@ -97,12 +101,8 @@ def get_stock_quote():
                             search_json=search_json, pformat=pformat,
                             user_query=query)
 
-# if the symbol is a Future, quit early, send to later.html
-    elif "." in symbol:
-        return render_template("later.html")
-
 # if the symbol is found, make the API call
-    elif quote_response:
+    else:
         #create dictionary from
         yahoo_quote = {
             "curr_date": date_time.strftime("%d/%m/%Y"),
@@ -127,22 +127,8 @@ def get_stock_quote():
 
         rapid_response = yfapi.get_rapid_api_data(symbol)
 
-        if yahoo_quote['quote_type'] == "EQUITY":
-            rapid_quote = {
-                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
-                "volume": rapid_response['price']['regularMarketVolume'].get('fmt'),
-            }
-
-        elif yahoo_quote['quote_type'] == "ETF":
-            rapid_quote = {
-                "fund_expense_ratio": rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-'),
-                "fund_style": rapid_response['fundProfile'].get('categoryName', '-'),
-                "fund_turnover": rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-'),
-                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
-                "volume": rapid_response['price']['regularMarketVolume'].get('fmt', '-'),
-            }
-
-        elif yahoo_quote['quote_type'] == "CRYPTOCURRENCY":
+# if the quote_type is not any of the above, it must be "FUTURE" or "CRYPTOCURRENCY"
+        if yahoo_quote['quote_type'] == "CRYPTOCURRENCY" or "FUTURE":
             rapid_quote = {
                 "24_day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'), #24hour figure
                 "24_day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'), #24hour figure
@@ -158,14 +144,32 @@ def get_stock_quote():
                 "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
             }
 
+        elif yahoo_quote['quote_type'] == "EQUITY":
+            rapid_quote = {
+                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+                "volume": rapid_response['price']['regularMarketVolume'].get('fmt'),
+            }
+
+        elif yahoo_quote['quote_type'] == "ETF":
+            rapid_quote = {
+                "fund_expense_ratio": rapid_response['fundProfile']['feesExpensesInvestment']['annualReportExpenseRatio'].get('fmt', '-'),
+                "fund_style": rapid_response['fundProfile'].get('categoryName', '-'),
+                "fund_turnover": rapid_response['fundProfile']['feesExpensesInvestment']['annualHoldingsTurnover'].get('fmt', '-'),
+                "market_cap": rapid_response['price']['marketCap'].get('fmt', '-'),
+                "volume": rapid_response['price']['regularMarketVolume'].get('fmt', '-'),
+            }
+
         elif yahoo_quote['quote_type'] == "MUTUALFUND":
             rapid_quote = {
                 "company_long": rapid_response['price'].get('longName'),
+                "curr_price": rapid_response['price']['regularMarketPrice'].get('fmt'),
                 "day_high": rapid_response['price']['regularMarketDayHigh'].get('fmt'),
                 "day_low": rapid_response['price']['regularMarketDayLow'].get('fmt'),
+                "dollar_chg": rapid_response['price']['regularMarketChange'].get('fmt'),
                 "expense_ratio": rapid_response['defaultKeyStatistics']['annualReportExpenseRatio'].get('fmt', '-'),
                 "holdings": rapid_response['topHoldings'].get('holdings'),
-                #"inception": rapid_response['defaultKeyStatistics']['fundInceptionDate'].get('fmt'),
+                "inception": rapid_response['defaultKeyStatistics']['fundInceptionDate'].get('fmt'),
+                "pct_chg": rapid_response['price']['regularMarketChangePercent'].get('fmt'),
                 "prev_close": rapid_response['price']['regularMarketPreviousClose'].get('fmt'),
                 "rating": rapid_response['defaultKeyStatistics']['morningStarOverallRating'].get('fmt'),
                 "return_yield": rapid_response['summaryDetail']['yield'].get('fmt'),
@@ -173,8 +177,11 @@ def get_stock_quote():
                 "symbol": rapid_response.get('symbol'),
                 "total_assets": rapid_response['defaultKeyStatistics']['totalAssets'].get('fmt'),
                 "turnover": rapid_response['defaultKeyStatistics']['annualHoldingsTurnover'].get('fmt', '-'),
+                "year_high": rapid_response['summaryDetail']['fiftyTwoWeekHigh'].get('fmt'),
+                "year_low": rapid_response['summaryDetail']['fiftyTwoWeekLow'].get('fmt'),
                 "ytd_return": rapid_response['summaryDetail']['ytdReturn'].get('fmt')
             }
+
 
         yahoo_quote.update(rapid_quote)
 
@@ -518,9 +525,8 @@ def get_stock_quote():
 #                                             pformat=pformat,
 #                                             future_json=rapid_response)
 
-#         # else:
-#         #     # quote_response == {'message': 'Limit Exceeded'}:
-#         #     return render_template("limit.html")
+#          elif quote_response == {'message': 'Limit Exceeded'}:
+#              return render_template("limit.html")
 
 @app.route("/price_chart.json")
 def send_chart_data():
@@ -667,8 +673,8 @@ def show_user_favorites():
         for count, value in enumerate(faves):
             user_stocks_by_id.append(faves[count].stock_id)
         for count, value in enumerate(user_stocks_by_id):
-           stock = crud.get_stock_by_id(value)
-           saved_stocks[stock.symbol] = stock.company, faves[count].date_saved
+            stock = crud.get_stock_by_id(value)
+            saved_stocks[stock.symbol] = stock.company, faves[count].date_saved
 
         return render_template("/user-profile.html", saved_stocks=saved_stocks, our_user=our_user)
 
