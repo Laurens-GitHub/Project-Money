@@ -79,29 +79,33 @@ def get_stock_quote():
 
     symbol = request.args.get('symbol')
     quote_data = parser.get_asset_dic(symbol)
-    return render_template('stock.html',
-                            quote_data=quote_data,
-                            pformat=pformat)
 
-                            # symbol=asset_quote.get('symbol'),
-                            # company=asset_quote.get('company'),
-                            # curr_price=asset_quote.get('curr_price'),
-                            # dollar_chg=asset_quote.get('dollar_chg'),
-                            # pct_chg=asset_quote.get('pct_chg'),
-                            # prev_close=asset_quote.get('prev_close'),
-                            # open_price=asset_quote.get('open_price'),
-                            # ask_price=asset_quote.get('ask_price'),
-                            # bid_price=asset_quote.get('bid_price'),
-                            # day_high=asset_quote.get('day_high'),
-                            # day_low=asset_quote.get('day_low'),
-                            # year_high=asset_quote.get('year_high'),
-                            # year_low=asset_quote.get('year_low'),
-                            # volume=asset_quote.get('volume'),
-                            # pe_ratio=asset_quote.get('pe_ratio'),
-                            # eps=asset_quote.get('eps'),
-                            # market_cap=asset_quote.get('market_cap'),
-                            # curr_date=asset_quote.get('curr_date'),
-                            # curr_time=asset_quote.get('curr_time'),
+    if quote_data:
+
+        return render_template('stock.html',
+                                quote_data=quote_data,
+                                pformat=pformat)
+    else:
+        return render_template('homepage.html')
+                                # symbol=asset_quote.get('symbol'),
+                                # company=asset_quote.get('company'),
+                                # curr_price=asset_quote.get('curr_price'),
+                                # dollar_chg=asset_quote.get('dollar_chg'),
+                                # pct_chg=asset_quote.get('pct_chg'),
+                                # prev_close=asset_quote.get('prev_close'),
+                                # open_price=asset_quote.get('open_price'),
+                                # ask_price=asset_quote.get('ask_price'),
+                                # bid_price=asset_quote.get('bid_price'),
+                                # day_high=asset_quote.get('day_high'),
+                                # day_low=asset_quote.get('day_low'),
+                                # year_high=asset_quote.get('year_high'),
+                                # year_low=asset_quote.get('year_low'),
+                                # volume=asset_quote.get('volume'),
+                                # pe_ratio=asset_quote.get('pe_ratio'),
+                                # eps=asset_quote.get('eps'),
+                                # market_cap=asset_quote.get('market_cap'),
+                                # curr_date=asset_quote.get('curr_date'),
+                                # curr_time=asset_quote.get('curr_time'),
 
 
 

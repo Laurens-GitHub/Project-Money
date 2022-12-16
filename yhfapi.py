@@ -1,5 +1,5 @@
-import requests
 import os
+import requests
 
 YHFAPI_KEY = os.environ['YHFAPI_KEY']
 
@@ -10,7 +10,10 @@ def get_stock_data(symbol):
     yhf_headers = {'x-rapidapi-host': "yh-finance.p.rapidapi.com", 'x-rapidapi-key': YHFAPI_KEY}
     stock_quote = requests.request("GET", url, headers=yhf_headers, params=query)
 
-    return stock_quote.json()
+    if stock_quote.raise_for_status():
+        return None
+    else:
+        return stock_quote
 
 # def get_chart_data(symbol):
 #     """Gets stock chart data by symbol"""
