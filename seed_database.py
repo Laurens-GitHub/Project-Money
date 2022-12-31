@@ -53,12 +53,8 @@ for n in range(5):
     unique_stocks = Stock.query.all()
 
     for _ in range (10):
-        print(user)
         random_stock = choice(unique_stocks)
         date_saved = today.strftime("%m/%d/%y")
-        print(random_stock)
-        print(unique_stocks)
-        print(model.db.session)
 
         user_stock = crud.create_user_stock(user.user_id, random_stock.stock_id, date_saved)
         model.db.session.add(user_stock)

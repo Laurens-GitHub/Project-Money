@@ -103,5 +103,3 @@ def get_asset_dic(symbol):
 
 
         return asset_quote
-
-print(get_asset_dic(""))

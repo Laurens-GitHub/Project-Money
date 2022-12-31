@@ -11,7 +11,7 @@ def get_stock_data(symbol):
     stock_quote = requests.request("GET", url, headers=yhf_headers, params=query)
 
     if stock_quote.raise_for_status():
-        return None
+        return stock_quote.raise_for_status()
     else:
         return stock_quote
 
