@@ -7,31 +7,11 @@ from yhfapi import get_stock_data
 def get_asset_dic(symbol):
     """Returns a dictionary with asset attributes"""
 
-    response = get_stock_data(symbol)
+    response = get_stock_data(symbol, '/stock/v2/get-summary')
 
-    # if the user enters an invalid symbol, use the autocomplete route
-    # TODO: re-write with Alpha API
-    if response.status_code == 302:
-        return print("not a valid symbol")
-    #     quote_url = 'https://yhfapi.net/v6/finance/autocomplete'
-    #     query = request.args.get('search')
-    #     quote_query = {'query': query,
-    #                     'lang': 'en' }
-    #     headers = {'X-API-KEY': YHFAPI_KEY}
-    #     results = requests.request('GET', quote_url, headers=headers, params=quote_query)
-    #     search_json = results.json()
-    #     search_results = search_json['ResultSet', {}).get('Result')
+    if response.json() != {}:
 
-
-        # return render_template('search-results.html', search_results=search_results,
-        #                     search_json=search_json, pformat=pformat,
-        #                     user_query=query)
-
-    elif response is None or response.status_code != 200:
-        return None
-
-    else:
-        quote_response = get_stock_data(symbol).json()
+        quote_response = response.json()
         price_dic = quote_response.get('price', {})
         summ_dic = quote_response.get('summaryDetail', {})
         default_dic = quote_response.get('defaultKeyStatistics', {})
@@ -100,6 +80,13 @@ def get_asset_dic(symbol):
             'circulating': summ_dic.get('circulatingSupply', {}).get('longFmt', '-'),
             'crypto_curr_price': price_dic.get('regularMarketPrice', {}).get('fmt', '-'),
             }
-
+        asset_quote.update({'method' : 'asset'})
 
         return asset_quote
+
+    else:
+        print('getting close matches')
+        search_response = get_stock_data(symbol, '/auto-complete', key='q')
+        search_json = search_response.json()
+        search_json.update({'method' : 'search'})
+        return search_json
