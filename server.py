@@ -89,29 +89,7 @@ def get_stock_quote():
         return render_template('search-results.html',
                                 search_results=search_data)
 
-    else: flash("We couldn't find anything for that entry.")
-
-# symbol=asset_quote.get('symbol'),
-# company=asset_quote.get('company'),
-# curr_price=asset_quote.get('curr_price'),
-# dollar_chg=asset_quote.get('dollar_chg'),
-# pct_chg=asset_quote.get('pct_chg'),
-# prev_close=asset_quote.get('prev_close'),
-# open_price=asset_quote.get('open_price'),
-# ask_price=asset_quote.get('ask_price'),
-# bid_price=asset_quote.get('bid_price'),
-# day_high=asset_quote.get('day_high'),
-# day_low=asset_quote.get('day_low'),
-# year_high=asset_quote.get('year_high'),
-# year_low=asset_quote.get('year_low'),
-# volume=asset_quote.get('volume'),
-# pe_ratio=asset_quote.get('pe_ratio'),
-# eps=asset_quote.get('eps'),
-# market_cap=asset_quote.get('market_cap'),
-# curr_date=asset_quote.get('curr_date'),
-# curr_time=asset_quote.get('curr_time'),
-
-
+    else: return redirect('/'), flash("We couldn't find anything for that entry.")
 
 @app.route('/price_chart.json')
 def send_chart_data():
@@ -166,6 +144,7 @@ def show_user():
 def process_login():
     """Process user login."""
 
+    #TODO: encrypt passwords
     email = request.form.get('login-email')
     password = request.form.get('login-pass')
 
@@ -204,15 +183,15 @@ def create_user_stock():
     if logged_in_email is None:
         flash('You must log in to save a stock.')
 
-#if this stock doesn't already exist in our database,
-#add it using the quote info:
+    #if this stock doesn't already exist in our database,
+    #add it using the quote info:
     elif check_stock is None:
         symbol = new_symbol
         new_stock = crud.create_stock(symbol, company)
         db.session.add(new_stock)
         db.session.commit()
 
-#and add the user stock:
+        #and add the user stock:
         created_stock = crud.get_stock_by_symbol(symbol)
         stock_id = created_stock.stock_id
         user_id = user.user_id
@@ -221,11 +200,11 @@ def create_user_stock():
         db.session.commit()
         flash(f'You saved {company} to your favorites.')
 
-#check if this stock is already in our database:
+    #check if this stock is already in our database:
 
     elif check_stock.symbol == new_symbol:
 
-#if it is, just create the user stock:
+        #if it is, just create the user stock:
         stock_id = check_stock.stock_id
         user_id = user.user_id
         fav_stock = crud.create_user_stock(user_id, stock_id)
@@ -233,7 +212,7 @@ def create_user_stock():
         db.session.commit()
         flash(f'You saved {company} to your favorites.')
 
-# TODO: Change this return statement so that the user stays on the same page, or change the flash to an alert box.
+    # TODO: Change this return statement so that the user stays on the same page, or change the flash to an alert box.
     return redirect('/')
 
 @app.route('/user_profile', methods=['GET', 'POST'])
@@ -243,7 +222,7 @@ def show_user_favorites():
     user = crud.get_user_by_email(logged_in_email)
     faves = crud.get_user_stocks(user.user_id)
 
-#TODO: fix this conditional, the template is showing the wrong thing
+    #TODO: fix this conditional, the template is showing the wrong thing
     print(faves)
     if faves is None:
 

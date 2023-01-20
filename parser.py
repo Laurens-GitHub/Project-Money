@@ -19,7 +19,7 @@ def get_asset_dic(symbol):
         date_time = datetime.now()
 
 
-    # if the symbol is found, make the API call
+        # if the symbol is found, make the API call
         asset_quote = {
             'curr_date': date_time.strftime('%d/%m/%Y'),
             'curr_time': date_time.strftime('%H:%M:%S'),

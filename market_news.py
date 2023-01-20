@@ -11,6 +11,6 @@ def get_news():
     top_headlines = newsapi.get_top_headlines(
                                           category='business',
                                           country='us',
-                                          language='en')
-                                        #   page_size=45)
+                                          language='en',
+                                          page_size=21)
     return top_headlines

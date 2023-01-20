@@ -58,9 +58,9 @@ class UserStock(db.Model):
 
     def __repr__(self):
         return f"""<User stock id={self.user_stock_id},
-    stock id={self.stock_id},
-    user={self.user_id},
-    date saved={self.date_saved}>"""
+        stock id={self.stock_id},
+        user={self.user_id},
+        date saved={self.date_saved}>"""
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///market", echo=True):

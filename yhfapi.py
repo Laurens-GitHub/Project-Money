@@ -25,12 +25,9 @@ def get_stock_data(symbol, endpoint, key='symbol', retries=2):
             response.raise_for_status()
         except HTTPError as exc:
             code = exc.response.status_code
-
-            if code in [429, 500, 502, 503, 504]:
-                # retry after 3 seconds
-                print('executing retry')
-                time.sleep(3)
-                continue
+            print(f'HTTP CODE {code}. executing retry')
+            time.sleep(3)
+            continue
 
             raise
 
